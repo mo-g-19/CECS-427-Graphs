@@ -18,7 +18,7 @@ Must implement Python script graph.py and command-line parameters -> correspondi
 'python ./graph.py [--input graph_file.gml] [--create_random_graph n c] [--multi_BFS a1 a2 ...] [--analyze] [--plot] [--output out_graph_file.gml]'
 
 ### Descriptons
-    - '--input graph_file.gml': reads a graph from given .gml file and uses for subsequent operations
+    -'--input graph_file.gml': reads a graph from given .gml file and uses for subsequent operations
     - '--create_random_graph n c': Generate new Erdos-Renyi graph with n nodes and edge probability p = (c * ln(n) ) / n. Overrides '--input'. Nodes must be labeled with strings ("0", "1", "2",..,"n-1")
     - '--nulti_BFS a1 a2 ...': accepts one or more starting nodes and computes BFS trees from each, storing all shortest paths. Each BFS tree must be independently visualized and compared
     - '--analyze': perform additional structural analyses:
