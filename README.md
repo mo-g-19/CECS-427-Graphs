@@ -3,13 +3,13 @@
 The goals of this assignment is to "advance your skills in **graph theory, algorithmic analysis, and professional software development**" through "Erdos-Renyi random graph generation, analysis, transformation, and visualization". Below is a quick summary of the submission instructions
 
 ## What this program is capabale of: 
-    - Generating and exporting Erdos-Renyi graphs
-    - Importing and analyzing graphs from .gml files
-    - Performing multi-source BFS with path tracking
-    - Identifying **connected components**
-    - Detecting **cycles and isolated nodes**
-    - Visualizing graphs with **annotated paths and substructures**
-    - Exporting computed metadata alongside the graphs
+- Generating and exporting Erdos-Renyi graphs
+- Importing and analyzing graphs from .gml files
+- Performing multi-source BFS with path tracking
+- Identifying **connected components**
+- Detecting **cycles and isolated nodes**
+- Visualizing graphs with **annotated paths and substructures**
+- Exporting computed metadata alongside the graphs
 
 ## Functional Requirements
 Must implement Python script graph.py and command-line parameters -> corresponding operations below
@@ -42,29 +42,29 @@ Reads a pre-defined graph, analyzes its structure, and displays a visualization.
 
 ### Design Expectations
 Use **Modular code strcture**, with seperate components for:
-    - Graph generation
-    - File I/O
-    - Graph algorithms (BFS, component detection, cycle detection)
-    - Visualization
-    - Argument parsing and orchestration
+- Graph generation
+- File I/O
+- Graph algorithms (BFS, component detection, cycle detection)
+- Visualization
+- Argument parsing and orchestration
 Implement **robust error handling**, including:
-    - File not found
-    - Malformed input graphs
-    - Invalid node IDs
-    - Insufficient parameters
+- File not found
+- Malformed input graphs
+- Invalid node IDs
+- Insufficient parameters
 **Document code thoroughly with function docstrings and comments**
 
 ## Submission Instructions:
 A compressed archive (.zip or .tar.gz) containing:
-    - source code (graph.py)
-    - any additional modules (e.g. a utils/ directory)
-    - A README.md file containing:
-        - Usage instructions
-        - Description of your implementation
-        - Examples of commands and outputs
-        - Names and IDs of both team members
-    - A sample input .gml file and a corresponding output .gml file
-    - Screenshots of plotted graphs (optional but recommended)
+- source code (graph.py)
+- any additional modules (e.g. a utils/ directory)
+- A README.md file containing:
+    - Usage instructions
+    - Description of your implementation
+    - Examples of commands and outputs
+    - Names and IDs of both team members
+- A sample input .gml file and a corresponding output .gml file
+- Screenshots of plotted graphs (optional but recommended)
 
 # Student Side for Documentation
 ## Mo Gibson
