@@ -6,3 +6,19 @@ data = et.parse("HT.gml")
 root = data.getroot()
 print(root) #this whill print the root element of the GML file
 
+#Same video; trying to extract the data from gml file
+result = []
+for el in root.iter():
+    if el.tag = '{http://www.opengis.net/gml/3.2}posList':
+        result.append{el.text}
+print(result)       #This will print a list of coordinates
+
+#Same video; to use XPath to filter coordinates by specific parent tags
+xpath_query = './/{html://namespaces.os.uk/open/oml/1.0}Building//{http://www.opengis.net/gml/3.2}postList'
+
+#Extract the coordinates
+result = []
+for el in root.findall(xpath_query):
+    result.append(el.text)
+
+print(result)       #This outputs the coordinates specifically from Building elements
