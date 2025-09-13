@@ -33,7 +33,7 @@ def multi_BFS(G, start_nodes: list[int]):
 
 #Using the notes from CECS 328 when created a BFS
 def general_BFS(G, initial_node){
-    visited = []
+    final = []
     queue = []
     queue.append(initial_node)
     while queue is not empty:
