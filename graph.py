@@ -24,37 +24,12 @@ def create_random_graph(n: int, c: float):
     return  G
 
 def multi_BFS(G, start_nodes: list[int]):
-
-    final_BFS = []
-    #np.zeros((len(start_nodes), (G.number_of_nodes())))
-    #counter_BFS = 0
-
-    G.add_nodes_from(list(n for n in G.nodes), visited=False)       #Instead of creating a visited array (which could make it O(n) if constantly searching through see if visited -> O(1) and an attribute) 0 -> not visited; 1 -> visited
-    
-    for node in start_nodes:
-        final = []
-        queue = []
-
-        queue.append(node)
-
-        while len(queue) > 0:
-            x = queue.pop()
-
-            if not G.nodes[x]['visited']:
-                G.nodes[x]['visited'] = True
-
-            for edge in G.edges(x):             #edge in (G.in_edges(x) + G.out_edges(x)):
-                 if not G.nodes[edge[1]]['visited']:
-                    queue.append(edge[1])
-            
-            final.append(x)
-        
-        final_BFS.append(final)
-
-        for visited_node in G:
-            G.nodes[visited_node]['visited'] = False
-
-    return final_BFS
+    all_BFS = []
+    for indv_node in start_nodes:
+        indv_BFS = list(nx.bfs_tree(G, indv_node).edges())
+        #print(f"indv_BFS: {indv_BFS}")
+        all_BFS.append(indv_BFS)
+    return all_BFS
 
 def analyze_graph(G):
     print("analyze_graph called on G")

@@ -18,6 +18,13 @@ def save_gml(G, path: str):
 
 
 def multi_BFS(G, start_nodes: list[int]):
+    all_BFS = []
+    for indv_node in start_nodes:
+        indv_BFS = list(nx.bfs_tree(G, indv_node).edges())
+        all_BFS.append(indv_BFS)
+    return all_BFS
+
+"""def multi_BFS(G, start_nodes: list[int]):
     print(f"multi_BFS called on G with start_nodes={start_nodes}")
     print()
 
@@ -70,7 +77,7 @@ def multi_BFS(G, start_nodes: list[int]):
         for visited_node in G:
             G.nodes[visited_node]['visited'] = False
 
-    return final_BFS
+    return final_BFS"""
     
 
 #Using the notes from CECS 328 when created a BFS
@@ -115,8 +122,8 @@ def general_BFS(G, initial_node_id: int):
 # Main
 # ====================================================================================================
 def main():
-    nodes = 6
-    edge_creation = 1
+    nodes = 8
+    edge_creation = 3
 
     Graph = create_random_graph(nodes, edge_creation)
     
