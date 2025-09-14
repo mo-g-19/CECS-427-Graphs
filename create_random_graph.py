@@ -40,24 +40,24 @@ def multi_BFS(G, start_nodes: list[int]):
 
         while len(queue) > 0:
             print(f"queue: {queue}")
-            x = queue.pop()
-            print(f"current node: {x}")
+            current_node = queue.pop()
+            print(f"current node: {current_node}")
 
-            if not G.nodes[x]['visited']:
-                print(f"current node visited: {G.nodes[x]['visited']}")
-                G.nodes[x]['visited'] = True
-                print(f"current node visited: {G.nodes[x]['visited']}")
+            if not G.nodes[current_node]['visited']:
+                print(f"current node visited: {G.nodes[current_node]['visited']}")
+                G.nodes[current_node]['visited'] = True
+                print(f"current node visited: {G.nodes[current_node]['visited']}")
                 print()
-                #nx.set_node_attributes(G, x, visited)
+                #nx.set_node_attributes(G, current_node, visited)
 
-            for edge in G.edges(x):             #edge in (G.in_edges(x) + G.out_edges(x)):
-            #every edge (x, y):
-                print(f"edge for current node {x}: {edge[1]}")
+            for edge in G.edges(current_node):             #edge in (G.in_edges(current_node) + G.out_edges(current_node)):
+            #every edge (current_node, y):
+                print(f"edge for current node {current_node}: {edge[1]}")
                 if not G.nodes[edge[1]]['visited']:
                     queue.append(edge[1])
             
             print()
-            final.append(x)
+            final.append(current_node)
             print(f"final: {final}")
             print()
 
@@ -75,27 +75,41 @@ def multi_BFS(G, start_nodes: list[int]):
 
 #Using the notes from CECS 328 when created a BFS
 def general_BFS(G, initial_node_id: int):
-    final = []
-    queue = []
-    queue.append(initial_node_id)
-    while len(queue) > 0:
-        print(f"queue: {queue}")
-        x = queue.pop()
-        print(f"current node: {x}")
-        if not G.nodes[x]['visited']:
-            print(f"current node visited: {G.nodes[x]['visited']}")
-            G.nodes[x]['visited'] = True
-            print(f"current node visited: {G.nodes[x]['visited']}")
+        final = []
+        queue = []
+
+        queue.append(initial_node_id)
+
+        while len(queue) > 0:
+            print(f"queue: {queue}")
+            current_node = queue.pop()
+            print(f"current node: {current_node}")
+
+            if not G.nodes[current_node]['visited']:
+                print(f"current node visited: {G.nodes[current_node]['visited']}")
+                G.nodes[current_node]['visited'] = True
+                print(f"current node visited: {G.nodes[current_node]['visited']}")
+                print()
+                #nx.set_node_attributes(G, x, visited)
+
+            for edge in G.edges(current_node):             #edge in (G.in_edges(current_node) + G.out_edges(current_node)):
+            #every edge (current_node, y):
+                print(f"edge for current node {current_node}: {edge[1]}")
+                if not G.nodes[edge[1]]['visited']:
+                    queue.append(edge[1])
+                    print(f"queue: {queue}")
+                    print()
+
             print()
-            #nx.set_node_attributes(G, x, visited)
-        for edge in G.edges(x):             #edge in (G.in_edges(x) + G.out_edges(x)):
-        #every edge (x, y):
-            print(f"edge for current node {x}: {edge[1]}")
-            if not G.nodes[edge[1]]['visited']:
-                queue.append(edge[1])
-        print()
-        final.append(x)
-    return final
+            print(f"final: {final}")
+            print()
+        return final
+
+        """print()
+        final.append(current_node)
+        print(f"final: {final}")
+        print()"""
+
 
 
 # Main
@@ -135,3 +149,72 @@ def plot_graph(G):
     plt.show()
 
 """
+
+"""
+def multi_BFS(G, start_nodes: list[int]):
+    print(f"multi_BFS called on G with start_nodes={start_nodes}")
+    print()
+
+    print(f"start_nodes len: {len(start_nodes)}")
+    print(f"number of nodes: {G.number_of_nodes()}")
+    print()
+
+
+    final_BFS = []
+    #np.zeros((len(start_nodes), (G.number_of_nodes())))
+    #counter_BFS = 0
+
+    G.add_nodes_from(list(n for n in G.nodes), visited=False)       #Instead of creating a visited array (which could make it O(n) if constantly searching through see if visited -> O(1) and an attribute) 0 -> not visited; 1 -> visited
+    
+    for node in start_nodes:
+        final = general_BFS(G, node)
+
+        print(f"BFS for {node}: {final}")
+        print()
+        
+        for visited_node in G:
+            G.nodes[visited_node]['visited'] = False
+
+        final_BFS.append(final)
+        print(f"final_BFS: {final_BFS}")
+
+        
+    return final_BFS
+    
+
+#Using the notes from CECS 328 when created a BFS
+def general_BFS(G, initial_node_id: int):
+        final = []
+        queue = []
+
+        queue.append(initial_node_id)
+
+        while len(queue) > 0:
+            print(f"queue: {queue}")
+            current_node = queue.pop()
+            print(f"current node: {current_node}")
+
+            if not G.nodes[current_node]['visited']:
+                print(f"current node visited: {G.nodes[current_node]['visited']}")
+                G.nodes[current_node]['visited'] = True
+                print(f"current node visited: {G.nodes[current_node]['visited']}")
+                print()
+                #nx.set_node_attributes(G, x, visited)
+
+            for edge in G.edges(current_node):             #edge in (G.in_edges(current_node) + G.out_edges(current_node)):
+            #every edge (current_node, y):
+                print(f"edge for current node {current_node}: {edge[1]}")
+                if not G.nodes[edge[1]]['visited']:
+                    queue.append(edge[1])
+                    print(f"queue: {queue}")
+                    print()
+
+            print()
+            print(f"final: {final}")
+            print()
+        return final
+
+""        print()
+        final.append(current_node)
+        print(f"final: {final}")
+        print()"""
