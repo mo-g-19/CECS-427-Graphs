@@ -96,8 +96,8 @@ def main():
     parser = build_parser()
     args = parser.parse_args()
 
-    G = None            # local graph variable
-    root_nodes = []     # local root nodes variable -> plot
+    G = None            # local graph variable -> all functions
+    root_nodes = []     # local root nodes variable -> made in multi_BFS, used in plot
 
     if args.input:
         G = load_gml(args.input)
