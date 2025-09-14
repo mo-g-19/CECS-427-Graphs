@@ -124,8 +124,8 @@ def general_BFS(G, initial_node_id: int):
 # Main
 # ====================================================================================================
 def main():
-    nodes = 8
-    edge_creation = 1
+    nodes = 20
+    edge_creation = 3
 
     Graph = create_random_graph(nodes, edge_creation)
     

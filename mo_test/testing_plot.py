@@ -59,46 +59,72 @@ def plot(G, n: list[int], image_num):
   # with_labels=True, font_weight='bold',
   #with_labels=True, font_weight='bold'
 
-  #need a set location
-  pos = nx.spring_layout(G)   #maybe add seed=42 later
-
-  #Isolated nodes list
-  isolated_nodes = list(nx.isolates(G))
-  print(f"isolated_nodes: {isolated_nodes}")
-  print()
-
-  #Connected nodes list
-  connected_nodes = list([node for components in nx.connected_components(G) for node in components])
-
-  nx.draw_networkx_nodes(G, pos, nodelist=list(connected_nodes))
-  nx.draw_networkx_nodes(G, pos, nodelist=isolated_nodes, node_color='#ff9a98')
-
-  nx.draw_networkx_labels(G,pos, labels={node: node for node in G.nodes})
-
 
   """ for nx.draw_networkx_labels; need labels =
   for target, values in labels.items():
     print(f"{target}: {values}")
   """
 
-  layer = []
 
-  for start_node in n:
+  """for start_node in n:
     bfs_tree = list(nx.bfs_tree(G, str(start_node)).edges())
     print(bfs_tree)
-    #print(bfs_tree.edges())
+    #print(bfs_tree.edges())"""
+
+  """#visited = {node: False for node in list(G.nodes())}
+  holder = 2
+  bfs_dictionary = nx.single_source_shortest_path(G, '1')
+  bfs_tracker = list(bfs_dictionary)
+  set_color = random_color()
+  print(bfs_tracker)
 
 
-  #plt.draw()
-  #plt.savefig(f"bfs_visualization_mo_analyze{image_num}.png", dpi=300)
+#  if target[0] == bfs_tracker[n-1]
 
+#  target[-1], target[-2]
+
+  for current_node in bfs_tracker:
+    if len(bfs_dictionary[current_node]) == holder:"""
+
+  #need a set location
+  pos = nx.spring_layout(G, k=0.5)   #maybe add seed=42 later
+
+  for root in n:
+    bfs_tree = nx.bfs_tree(G, str(root))
+    highlight_edges = list(bfs_tree.edges())
+
+    
+
+    #Isolated nodes list
+    isolated_nodes = list(nx.isolates(G))
+    print(f"isolated_nodes: {isolated_nodes}")
+    print()
+
+    #Connected nodes list
+    connected_nodes = list([node for components in nx.connected_components(G) for node in components])
+
+    nx.draw_networkx_nodes(G, pos, nodelist=list(connected_nodes))
+    #root node
+    nx.draw_networkx_nodes(G, pos, nodelist=[str(root)], node_color='green', linewidths=3.0)
+    nx.draw_networkx_nodes(G, pos, nodelist=isolated_nodes, node_color='#ff9a98')
+
+    nx.draw_networkx_labels(G,pos, labels={node: node for node in G.nodes})
+    nx.draw_networkx_edges(G, pos, edgelist=highlight_edges, edge_color='yellow', width=2)
+    nx.draw_networkx_edges(G, pos, edgelist=G.edges())
+
+    plt.draw()
+    plt.savefig(f"bfs_visualization_mo_analyze_ver1_{image_num}{root}.png", dpi=300)
+    plt.clf()
+
+def random_color():
+  return "#:{:06x}".format(random.randint(0, 0xFFFFFF))
 
 #Try out using nx.draw(G)
 # Main
 # ====================================================================================================
 def main():
-  G = load_gml("mo_load_gml.gml")
-  roots = [1, 2]
+  G = load_gml("mo_analyze_graph.gml")
+  roots = [0, 1, 2]
   number_image = 2
 
   plot(G, roots, number_image)
