@@ -9,7 +9,8 @@ import networkx as nx
 # ====================================================================================================
 def load_gml(path: str):
     print(f"load_gml called with path={path}")
-    return "PLACEHOLDER"
+    Graph = nx.read_gml(path)
+    return Graph
 
 def save_gml(G, path: str):
     nx.write_gml(G, path)
