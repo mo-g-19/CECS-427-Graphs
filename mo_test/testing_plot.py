@@ -62,12 +62,12 @@ def plot(G, n: list[int], image_num):
   #need a set location
   pos = nx.spring_layout(G)   #maybe add seed=42 later
 
+  #Isolated nodes list
   isolated_nodes = list(nx.isolates(G))
   print(f"isolated_nodes: {isolated_nodes}")
   print()
-  
-  
-  #now drawing the other nodes
+
+  #Connected nodes list
   connected_nodes = list([node for components in nx.connected_components(G) for node in components])
 
   nx.draw_networkx_nodes(G, pos, nodelist=list(connected_nodes))
@@ -75,13 +75,22 @@ def plot(G, n: list[int], image_num):
 
   nx.draw_networkx_labels(G,pos, labels={node: node for node in G.nodes})
 
+
   """ for nx.draw_networkx_labels; need labels =
   for target, values in labels.items():
     print(f"{target}: {values}")
   """
-  
-  plt.draw()
-  plt.savefig(f"bfs_visualization_mo_analyze{image_num}.png", dpi=300)
+
+  layer = []
+
+  for start_node in n:
+    bfs_tree = list(nx.bfs_tree(G, str(start_node)).edges())
+    print(bfs_tree)
+    #print(bfs_tree.edges())
+
+
+  #plt.draw()
+  #plt.savefig(f"bfs_visualization_mo_analyze{image_num}.png", dpi=300)
 
 
 #Try out using nx.draw(G)
@@ -90,7 +99,7 @@ def plot(G, n: list[int], image_num):
 def main():
   G = load_gml("mo_load_gml.gml")
   roots = [1, 2]
-  number_image = 1
+  number_image = 2
 
   plot(G, roots, number_image)
 
