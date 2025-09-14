@@ -30,14 +30,74 @@ def multi_BFS(G, start_nodes: list[int]):
         all_BFS.append(indv_BFS)
     return all_BFS
 
-def analyze_graph(G):
-    print("analyze_graph called on G")
+def analyze_components(G):
+    comps = list(nx.connected_components(G))
+    print("Connected components:", comps)
+
+def analyze_cycles(G):
+    if not nx.is_forest(G):
+        print("This graph has a cycle.")
+    else:
+        print("This graph is acyclic (a forest).")
+
+def analyze_isolates(G):
+    isolates = list(nx.isolates(G))
+    if isolates:
+        print("Graph has isolated nodes:", isolates)
+    else:
+        print("No isolated nodes.")
+
+def analyze_density(G):
+    print("Density:", nx.density(G))
+
+def analyze_avg_shortest_path(G):
+    if nx.is_connected(G):
+        avg_len = nx.average_shortest_path_length(G)
+        print("Average shortest path length:", avg_len)
+    else:
+        print("This graph is not connected; average shortest path length is undefined.")
 
 
 def plot_graph(G):
-    seed = int(time.time())
-    pos = nx.spring_layout(G, seed=seed)    #Honesly dont know what this does just copied this from the test code 
-    nx.draw(G, pos=pos)                     #place holder anyway this whole funtion needs to be redone
+    seed = 951369
+    pos = nx.spring_layout(G, seed=seed)
+    
+    #spliting the nodes into two groups isolated and non isolated
+    isolates = set(nx.isolates(G))
+    non_isolates = [v for v in G.nodes() if v not in isolates]
+    
+    # draws all non_isolates
+    if non_isolates:
+        nx.draw_networkx_nodes(
+            G,
+            pos,
+            nodelist=non_isolates,
+            node_color="cyan",
+            node_size=500,
+    )
+
+    # draws all isolates
+    if isolates:
+        nx.draw_networkx_nodes(
+            G,
+            pos,
+            nodelist=isolates,
+            node_color="lightcoral",
+            node_size=500,
+    )
+    
+    # draw edges
+    nx.draw_networkx_edges(
+        G, 
+        pos, 
+        edge_color="lightgray", 
+        width=1.0, 
+        alpha=0.6
+    )
+    
+    # adds lables to the nodes not required i just added this in when i was verifying the graph will delete later
+    nx.draw_networkx_labels(G, pos, labels={n: n for n in G.nodes()}, font_size=10)
+
     plt.show()
 
 
@@ -116,7 +176,11 @@ def main():
             print()
 
     if args.analyze and G:
-        analyze_graph(G)
+        analyze_components(G)
+        analyze_cycles(G)
+        analyze_isolates(G)
+        analyze_density(G)
+        analyze_avg_shortest_path(G)
 
     if args.plot and G:
         plot_graph(G)

@@ -80,23 +80,27 @@ graph [
     label "19"
   ]
   edge [
-    source 1
-    target 8
+    source 0
+    target 5
   ]
   edge [
     source 1
-    target 16
-  ]
-  edge [
-    source 3
     target 18
   ]
   edge [
-    source 4
-    target 6
+    source 2
+    target 9
   ]
   edge [
     source 4
+    target 13
+  ]
+  edge [
+    source 5
+    target 14
+  ]
+  edge [
+    source 6
     target 18
   ]
   edge [
@@ -105,34 +109,14 @@ graph [
   ]
   edge [
     source 9
-    target 16
-  ]
-  edge [
-    source 10
-    target 11
-  ]
-  edge [
-    source 10
-    target 14
-  ]
-  edge [
-    source 11
-    target 12
-  ]
-  edge [
-    source 11
     target 18
   ]
   edge [
     source 13
-    target 14
-  ]
-  edge [
-    source 13
-    target 17
-  ]
-  edge [
-    source 14
     target 16
+  ]
+  edge [
+    source 15
+    target 18
   ]
 ]
