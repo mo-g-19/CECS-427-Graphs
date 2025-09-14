@@ -103,17 +103,24 @@ def plot(G, n: list[int], image_num):
     #Connected nodes list
     connected_nodes = list([node for components in nx.connected_components(G) for node in components])
 
+    #drawing the connected nodes first (default color)
     nx.draw_networkx_nodes(G, pos, nodelist=list(connected_nodes))
-    #root node
+    #root node -> different color
     nx.draw_networkx_nodes(G, pos, nodelist=[str(root)], node_color='green', linewidths=3.0)
+    #isolated node -> different color (red)
     nx.draw_networkx_nodes(G, pos, nodelist=isolated_nodes, node_color='#ff9a98')
 
+    #labeling the node #
     nx.draw_networkx_labels(G,pos, labels={node: node for node in G.nodes})
+    #Highlighting BFS route
     nx.draw_networkx_edges(G, pos, edgelist=highlight_edges, edge_color='yellow', width=2)
+    #Drawing all other edges in the graph
     nx.draw_networkx_edges(G, pos, edgelist=G.edges())
 
     plt.draw()
+    #Specific save -> review later (need to change to pop up graphs)
     plt.savefig(f"bfs_visualization_mo_analyze_ver1_{image_num}{root}.png", dpi=300)
+    #clear so doesn't clutter up the next graph
     plt.clf()
 
 def random_color():
