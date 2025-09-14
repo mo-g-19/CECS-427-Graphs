@@ -1,0 +1,465 @@
+multi_BFS called on G with start_nodes=[1, 2]
+
+start_nodes len: 2
+number of nodes: 20
+
+queue: [1]
+current node: 1
+current node visited: False
+current node visited: True
+
+edge for current node 1: 10
+
+final: [1]
+
+queue: [10]
+current node: 10
+current node visited: False
+current node visited: True
+
+edge for current node 10: 1
+edge for current node 10: 2
+
+final: [1, 10]
+
+queue: [2]
+current node: 2
+current node visited: False
+current node visited: True
+
+edge for current node 2: 0
+edge for current node 2: 8
+edge for current node 2: 9
+edge for current node 2: 10
+edge for current node 2: 12
+edge for current node 2: 19
+
+final: [1, 10, 2]
+
+queue: [0, 8, 9, 12, 19]
+current node: 19
+current node visited: False
+current node visited: True
+
+edge for current node 19: 2
+edge for current node 19: 14
+
+final: [1, 10, 2, 19]
+
+queue: [0, 8, 9, 12, 14]
+current node: 14
+current node visited: False
+current node visited: True
+
+edge for current node 14: 13
+edge for current node 14: 18
+edge for current node 14: 19
+
+final: [1, 10, 2, 19, 14]
+
+queue: [0, 8, 9, 12, 13, 18]
+current node: 18
+current node visited: False
+current node visited: True
+
+edge for current node 18: 13
+edge for current node 18: 14
+
+final: [1, 10, 2, 19, 14, 18]
+
+queue: [0, 8, 9, 12, 13, 13]
+current node: 13
+current node visited: False
+current node visited: True
+
+edge for current node 13: 14
+edge for current node 13: 18
+
+final: [1, 10, 2, 19, 14, 18, 13]
+
+queue: [0, 8, 9, 12, 13]
+current node: 13
+edge for current node 13: 14
+edge for current node 13: 18
+
+final: [1, 10, 2, 19, 14, 18, 13, 13]
+
+queue: [0, 8, 9, 12]
+current node: 12
+current node visited: False
+current node visited: True
+
+edge for current node 12: 2
+edge for current node 12: 3
+edge for current node 12: 8
+edge for current node 12: 15
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12]
+
+queue: [0, 8, 9, 3, 8, 15]
+current node: 15
+current node visited: False
+current node visited: True
+
+edge for current node 15: 12
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15]
+
+queue: [0, 8, 9, 3, 8]
+current node: 8
+current node visited: False
+current node visited: True
+
+edge for current node 8: 2
+edge for current node 8: 12
+edge for current node 8: 16
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8]
+
+queue: [0, 8, 9, 3, 16]
+current node: 16
+current node visited: False
+current node visited: True
+
+edge for current node 16: 8
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16]
+
+queue: [0, 8, 9, 3]
+current node: 3
+current node visited: False
+current node visited: True
+
+edge for current node 3: 6
+edge for current node 3: 9
+edge for current node 3: 12
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3]
+
+queue: [0, 8, 9, 6, 9]
+current node: 9
+current node visited: False
+current node visited: True
+
+edge for current node 9: 2
+edge for current node 9: 3
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9]
+
+queue: [0, 8, 9, 6]
+current node: 6
+current node visited: False
+current node visited: True
+
+edge for current node 6: 3
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6]
+
+queue: [0, 8, 9]
+current node: 9
+edge for current node 9: 2
+edge for current node 9: 3
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9]
+
+queue: [0, 8]
+current node: 8
+edge for current node 8: 2
+edge for current node 8: 12
+edge for current node 8: 16
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8]
+
+queue: [0]
+current node: 0
+current node visited: False
+current node visited: True
+
+edge for current node 0: 2
+edge for current node 0: 11
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8, 0]
+
+queue: [11]
+current node: 11
+current node visited: False
+current node visited: True
+
+edge for current node 11: 0
+edge for current node 11: 5
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8, 0, 11]
+
+queue: [5]
+current node: 5
+current node visited: False
+current node visited: True
+
+edge for current node 5: 4
+edge for current node 5: 11
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8, 0, 11, 5]
+
+queue: [4]
+current node: 4
+current node visited: False
+current node visited: True
+
+edge for current node 4: 5
+edge for current node 4: 17
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8, 0, 11, 5, 4]
+
+queue: [17]
+current node: 17
+current node visited: False
+current node visited: True
+
+edge for current node 17: 4
+edge for current node 17: 7
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8, 0, 11, 5, 4, 17]
+
+queue: [7]
+current node: 7
+current node visited: False
+current node visited: True
+
+edge for current node 7: 17
+
+final: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8, 0, 11, 5, 4, 17, 7]
+
+BFS for 1: [1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8, 0, 11, 5, 4, 17, 7]
+
+final_BFS: [[1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8, 0, 11, 5, 4, 17, 7]]
+queue: [2]
+current node: 2
+current node visited: False
+current node visited: True
+
+edge for current node 2: 0
+edge for current node 2: 8
+edge for current node 2: 9
+edge for current node 2: 10
+edge for current node 2: 12
+edge for current node 2: 19
+
+final: [2]
+
+queue: [0, 8, 9, 10, 12, 19]
+current node: 19
+current node visited: False
+current node visited: True
+
+edge for current node 19: 2
+edge for current node 19: 14
+
+final: [2, 19]
+
+queue: [0, 8, 9, 10, 12, 14]
+current node: 14
+current node visited: False
+current node visited: True
+
+edge for current node 14: 13
+edge for current node 14: 18
+edge for current node 14: 19
+
+final: [2, 19, 14]
+
+queue: [0, 8, 9, 10, 12, 13, 18]
+current node: 18
+current node visited: False
+current node visited: True
+
+edge for current node 18: 13
+edge for current node 18: 14
+
+final: [2, 19, 14, 18]
+
+queue: [0, 8, 9, 10, 12, 13, 13]
+current node: 13
+current node visited: False
+current node visited: True
+
+edge for current node 13: 14
+edge for current node 13: 18
+
+final: [2, 19, 14, 18, 13]
+
+queue: [0, 8, 9, 10, 12, 13]
+current node: 13
+edge for current node 13: 14
+edge for current node 13: 18
+
+final: [2, 19, 14, 18, 13, 13]
+
+queue: [0, 8, 9, 10, 12]
+current node: 12
+current node visited: False
+current node visited: True
+
+edge for current node 12: 2
+edge for current node 12: 3
+edge for current node 12: 8
+edge for current node 12: 15
+
+final: [2, 19, 14, 18, 13, 13, 12]
+
+queue: [0, 8, 9, 10, 3, 8, 15]
+current node: 15
+current node visited: False
+current node visited: True
+
+edge for current node 15: 12
+
+final: [2, 19, 14, 18, 13, 13, 12, 15]
+
+queue: [0, 8, 9, 10, 3, 8]
+current node: 8
+current node visited: False
+current node visited: True
+
+edge for current node 8: 2
+edge for current node 8: 12
+edge for current node 8: 16
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8]
+
+queue: [0, 8, 9, 10, 3, 16]
+current node: 16
+current node visited: False
+current node visited: True
+
+edge for current node 16: 8
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16]
+
+queue: [0, 8, 9, 10, 3]
+current node: 3
+current node visited: False
+current node visited: True
+
+edge for current node 3: 6
+edge for current node 3: 9
+edge for current node 3: 12
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3]
+
+queue: [0, 8, 9, 10, 6, 9]
+current node: 9
+current node visited: False
+current node visited: True
+
+edge for current node 9: 2
+edge for current node 9: 3
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9]
+
+queue: [0, 8, 9, 10, 6]
+current node: 6
+current node visited: False
+current node visited: True
+
+edge for current node 6: 3
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6]
+
+queue: [0, 8, 9, 10]
+current node: 10
+current node visited: False
+current node visited: True
+
+edge for current node 10: 1
+edge for current node 10: 2
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10]
+
+queue: [0, 8, 9, 1]
+current node: 1
+current node visited: False
+current node visited: True
+
+edge for current node 1: 10
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1]
+
+queue: [0, 8, 9]
+current node: 9
+edge for current node 9: 2
+edge for current node 9: 3
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9]
+
+queue: [0, 8]
+current node: 8
+edge for current node 8: 2
+edge for current node 8: 12
+edge for current node 8: 16
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9, 8]
+
+queue: [0]
+current node: 0
+current node visited: False
+current node visited: True
+
+edge for current node 0: 2
+edge for current node 0: 11
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9, 8, 0]
+
+queue: [11]
+current node: 11
+current node visited: False
+current node visited: True
+
+edge for current node 11: 0
+edge for current node 11: 5
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9, 8, 0, 11]
+
+queue: [5]
+current node: 5
+current node visited: False
+current node visited: True
+
+edge for current node 5: 4
+edge for current node 5: 11
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9, 8, 0, 11, 5]
+
+queue: [4]
+current node: 4
+current node visited: False
+current node visited: True
+
+edge for current node 4: 5
+edge for current node 4: 17
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9, 8, 0, 11, 5, 4]
+
+queue: [17]
+current node: 17
+current node visited: False
+current node visited: True
+
+edge for current node 17: 4
+edge for current node 17: 7
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9, 8, 0, 11, 5, 4, 17]
+
+queue: [7]
+current node: 7
+current node visited: False
+current node visited: True
+
+edge for current node 7: 17
+
+final: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9, 8, 0, 11, 5, 4, 17, 7]
+
+BFS for 2: [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9, 8, 0, 11, 5, 4, 17, 7]
+
+final_BFS: [[1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8, 0, 11, 5, 4, 17, 7], [2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9, 8, 0, 11, 5, 4, 17, 7]]
+[1, 10, 2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 9, 8, 0, 11, 5, 4, 17, 7]
+[2, 19, 14, 18, 13, 13, 12, 15, 8, 16, 3, 9, 6, 10, 1, 9, 8, 0, 11, 5, 4, 17, 7]
