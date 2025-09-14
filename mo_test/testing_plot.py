@@ -5,6 +5,8 @@ import networkx as nx
 import time
 import math
 import argparse
+import matplotlib
+#matplotlib.use("TKAgg")
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -39,7 +41,27 @@ import networkx as nx
 #   nx.draw_networkx_edges(): overlay highlighted path edges
 #                     also need to do a specific highlight to do shortest path
 
+#Outline for needed testing
+#Pull from mo_analyze_graph.gml
+def load_gml(path: str):
+    print(f"load_gml called with path={path}")
+    Graph = nx.read_gml(path)
+    return Graph
 
+
+#Try out using nx.draw(G)
+# Main
+# ====================================================================================================
+def main():
+  G = load_gml("mo_load_gml.gml")
+  roots = [1, 2]
+
+  nx.draw(G, pos=nx.spring_layout(G))
+  plt.draw()
+  plt.savefig("bfs_visualization_mo_analyze.png", dpi=300)
+
+if __name__ == "__main__":
+    main()
 
 
 
