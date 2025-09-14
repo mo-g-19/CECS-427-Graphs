@@ -108,12 +108,12 @@ def main():
     
     #nx.set_node_attributes(Graph, False, "visited")     #https://stackoverflow.com/questions/54497929/networkx-setting-node-attributes-from-dataframe
 
-    save_gml(Graph, "mo_analyze_graph.gml")
-
     potential_q = multi_BFS(Graph, [1, 2])
     for indv_BFS in potential_q:
         print(indv_BFS)
     #print(potential_q)
+
+    save_gml(Graph, "mo_analyze_graph.gml")
 
     """for list_order in potential_q[0].len():
         print(potential_q[-list_order])"""
