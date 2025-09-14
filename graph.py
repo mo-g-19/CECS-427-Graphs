@@ -38,33 +38,18 @@ def multi_BFS(G, start_nodes: list[int]):
         queue.append(node)
 
         while len(queue) > 0:
-            print(f"queue: {queue}")
             x = queue.pop()
-            print(f"current node: {x}")
 
             if not G.nodes[x]['visited']:
-                print(f"current node visited: {G.nodes[x]['visited']}")
                 G.nodes[x]['visited'] = True
-                print(f"current node visited: {G.nodes[x]['visited']}")
-                print()
-                #nx.set_node_attributes(G, x, visited)
 
             for edge in G.edges(x):             #edge in (G.in_edges(x) + G.out_edges(x)):
-            #every edge (x, y):
-                print(f"edge for current node {x}: {edge[1]}")
-                if not G.nodes[edge[1]]['visited']:
+                 if not G.nodes[edge[1]]['visited']:
                     queue.append(edge[1])
             
-            print()
             final.append(x)
-            print(f"final: {final}")
-            print()
-
-        print(f"BFS for {node}: {final}")
-        print()
         
         final_BFS.append(final)
-        print(f"final_BFS: {final_BFS}")
 
         for visited_node in G:
             G.nodes[visited_node]['visited'] = False
@@ -147,7 +132,9 @@ def main():
         G = create_random_graph(n, c)
 
     if args.multi_BFS and G:
-        multi_BFS(G, args.multi_BFS)
+        all_BFS = multi_BFS(G, args.multi_BFS)
+        for indv_BFS in all_BFS:
+            print(indv_BFS)
 
     if args.analyze and G:
         analyze_graph(G)
