@@ -26,7 +26,7 @@ def create_random_graph(n: int, c: float):
 def multi_BFS(G, start_nodes: list[int]):
     all_BFS = []
     for indv_node in start_nodes:
-        indv_BFS = list(nx.bfs_tree(G, indv_node).edges())
+        indv_BFS = nx.single_source_shortest_path(G, indv_node)
         #print(f"indv_BFS: {indv_BFS}")
         all_BFS.append(indv_BFS)
     return all_BFS
@@ -109,7 +109,11 @@ def main():
     if args.multi_BFS and G:
         all_BFS = multi_BFS(G, args.multi_BFS)
         for indv_BFS in all_BFS:
-            print(indv_BFS)
+            #print(indv_BFS)
+            #print()
+            for target, path in indv_BFS.items():
+                print(f"{target}: {path}")
+            print()
 
     if args.analyze and G:
         analyze_graph(G)

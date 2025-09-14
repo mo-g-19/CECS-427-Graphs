@@ -20,7 +20,9 @@ def save_gml(G, path: str):
 def multi_BFS(G, start_nodes: list[int]):
     all_BFS = []
     for indv_node in start_nodes:
-        indv_BFS = list(nx.bfs_tree(G, indv_node).edges())
+        indv_BFS = nx.single_source_shortest_path(G, indv_node)
+        #print(f"indv_BFS: {indv_BFS}")
+        print(f"indv_BFS: {indv_BFS}")
         all_BFS.append(indv_BFS)
     return all_BFS
 
