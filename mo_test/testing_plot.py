@@ -48,6 +48,20 @@ def load_gml(path: str):
     Graph = nx.read_gml(path)
     return Graph
 
+#Outline of plot function
+def plot(G, n: list[int], image_num):
+
+
+  labels = nx.draw(G, with_labels=True, font_weight='bold', pos=nx.spring_layout(G))
+  
+  """ for nx.draw_networkx_labels
+  for target, values in labels.items():
+    print(f"{target}: {values}")
+  """
+  
+  plt.draw()
+  plt.savefig("bfs_visualization_mo_analyze{n}.png", dpi=300)
+
 
 #Try out using nx.draw(G)
 # Main
@@ -55,10 +69,9 @@ def load_gml(path: str):
 def main():
   G = load_gml("mo_load_gml.gml")
   roots = [1, 2]
+  number_image = 0
 
-  nx.draw(G, pos=nx.spring_layout(G))
-  plt.draw()
-  plt.savefig("bfs_visualization_mo_analyze.png", dpi=300)
+  plot(G, roots, number_image)
 
 if __name__ == "__main__":
     main()
