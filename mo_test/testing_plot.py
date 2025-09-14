@@ -29,6 +29,7 @@ import networkx as nx
 #                       Need to check, but if in strict order, could use a simple O(n) to change to a new color
 
 #Isolated Nodes
+#   https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.isolate.isolates.html
 #   nx.isolates():
 #       find the degree of 0
 #   https://networkx.org/documentation/stable/reference/generated/networkx.drawing.nx_pylab.draw_networkx_nodes.html#networkx.drawing.nx_pylab.draw_networkx_nodes
@@ -52,15 +53,35 @@ def load_gml(path: str):
 def plot(G, n: list[int], image_num):
 
 
-  labels = nx.draw(G, with_labels=True, font_weight='bold', pos=nx.spring_layout(G))
+  #nx.draw(G, with_labels=True, font_weight='bold', pos=nx.spring_layout(G))
   
-  """ for nx.draw_networkx_labels
+  #Figuring out a way to differentiate the isolated nodes
+  # with_labels=True, font_weight='bold',
+  #with_labels=True, font_weight='bold'
+
+  #need a set location
+  pos = nx.spring_layout(G)   #maybe add seed=42 later
+
+  isolated_nodes = list(nx.isolates(G))
+  print(f"isolated_nodes: {isolated_nodes}")
+  print()
+  
+  
+  #now drawing the other nodes
+  connected_nodes = list([node for components in nx.connected_components(G) for node in components])
+
+  nx.draw_networkx_nodes(G, pos, nodelist=list(connected_nodes))
+  nx.draw_networkx_nodes(G, pos, nodelist=isolated_nodes, node_color='#ff9a98')
+
+  nx.draw_networkx_labels(G,pos, labels={node: node for node in G.nodes})
+
+  """ for nx.draw_networkx_labels; need labels =
   for target, values in labels.items():
     print(f"{target}: {values}")
   """
   
   plt.draw()
-  plt.savefig("bfs_visualization_mo_analyze{n}.png", dpi=300)
+  plt.savefig(f"bfs_visualization_mo_analyze{image_num}.png", dpi=300)
 
 
 #Try out using nx.draw(G)
@@ -69,7 +90,7 @@ def plot(G, n: list[int], image_num):
 def main():
   G = load_gml("mo_load_gml.gml")
   roots = [1, 2]
-  number_image = 0
+  number_image = 1
 
   plot(G, roots, number_image)
 
