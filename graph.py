@@ -1,3 +1,4 @@
+from collections import deque
 import time
 import math
 import argparse
@@ -21,14 +22,56 @@ def create_random_graph(n: int, c: float):
     seed = int(time.time())
     p = (c * math.log(n)) / n                   #calculating the probablility based off the probablilty funtion in the assignment
     G = nx.erdos_renyi_graph(n, p, seed=seed)    #generating the graph
+    
+    mapping = {i: str(i) for i in G.nodes()}    #Making all the lables strings as per sinstructions
+    G = nx.relabel_nodes(G, mapping)
+    for v in G.nodes():
+        G.nodes[v]["label"] = v
     return  G
 
-def multi_BFS(G, start_nodes: list[int]):
+def multi_BFS(G, start_nodes: list[str]):
     all_BFS = []
     for indv_node in start_nodes:
         indv_BFS = nx.single_source_shortest_path(G, indv_node)
         all_BFS.append(indv_BFS)
     return all_BFS
+
+def compute_bfs_meta(G: nx.Graph, roots):
+    # checks all the roots to make sure they are in g and also that they are stings
+    roots = [str(r) for r in (roots or []) if str(r) in G]
+
+    dist, parent, source = {}, {}, {}
+    q = deque()
+
+    # initializes the queues
+    for r in roots:
+        dist[r] = 0
+        parent[r] = None
+        source[r] = r
+        q.append(r)
+
+    # BFS
+    while q:
+        u = q.popleft()
+        for v in G.neighbors(u):            # loop pretty much runs bfs again but this time keeps track of distance parent and source for all nodes
+            if v not in dist:           
+                dist[v]   = dist[u] + 1
+                parent[v] = u
+                source[v] = source[u]
+                q.append(v)
+
+    return dist, parent, source
+
+def attach_bfs_meta(G: nx.Graph, dist, parent, source):
+    for v in G.nodes():
+        if v in dist:
+            G.nodes[v]["dist"] = int(dist[v])
+            G.nodes[v]["source"] = str(source[v])
+            G.nodes[v]["parent"] = str(parent[v]) if parent[v] is not None else "undefined"
+        else:
+            G.nodes[v]["dist"] = "undefined"
+            G.nodes[v]["source"] = "undefined"
+            G.nodes[v]["parent"] = "undefined"
 
 def analyze_components(G):
     comps = list(nx.connected_components(G))
@@ -129,7 +172,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--multi_BFS",
         nargs="+",
-        type=int,
+        type=str,
         metavar="start_nodes",
         help="Run multi-source BFS from given nodes",
     )
@@ -186,7 +229,11 @@ def main():
         plot_graph(G)
 
     if args.output and G:
+        dist, parent, source = compute_bfs_meta(G, args.multi_BFS)
+        attach_bfs_meta(G, dist, parent, source)
+
         save_gml(G, args.output)
+        
 
 if __name__ == "__main__":
     main()
