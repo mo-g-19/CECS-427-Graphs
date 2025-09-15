@@ -125,7 +125,7 @@ def general_BFS(G, initial_node_id: int):
 # ====================================================================================================
 def main():
     nodes = 20
-    edge_creation = 3
+    edge_creation = 1
 
     Graph = create_random_graph(nodes, edge_creation)
     
@@ -136,7 +136,7 @@ def main():
         print(indv_BFS)
     #print(potential_q)
 
-    save_gml(Graph, "mo_analyze_graph.gml")
+    save_gml(Graph, "mo_analyze_graph_ver_2.gml")
 
     """for list_order in potential_q[0].len():
         print(potential_q[-list_order])"""
