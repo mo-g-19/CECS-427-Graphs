@@ -175,20 +175,48 @@ def plot_graph(G, root_nodes):
             #Connected nodes list
             connected_nodes = list([node for components in nx.connected_components(G) for node in components])
 
-
+            #Compute BFS tree from root
+            bfs_tree = nx.bfs_tree(G, str(root))
+            bfs_edges = {tuple(sorted(e)) for e in bfs_tree.edges()}    #list of edges in the bfs
+            all_edges = {tuple(sorted(e)) for e in G.edges()}           #list of all edges
+            bg_edges  = list(all_edges - bfs_edges)                     #list of 
+            
             #drawing the connected nodes first (default color)
-            nx.draw_networkx_nodes(G, pos, nodelist=list(connected_nodes))
+            nx.draw_networkx_nodes(
+                G, 
+                pos, 
+                nodelist=list(connected_nodes)
+            )
             #root node -> different color
-            nx.draw_networkx_nodes(G, pos, nodelist=[str(root)], node_color='lightcoral', linewidths=3.0)
+            nx.draw_networkx_nodes(
+                G, 
+                pos, 
+                nodelist=[str(root)], 
+                node_color='lightcoral', 
+                linewidths=3.0
+            )
             #isolated node -> different color (red)
-            nx.draw_networkx_nodes(G, pos, nodelist=isolated_nodes, node_color='lightcoral')
+            nx.draw_networkx_nodes(
+                G, 
+                pos, 
+                nodelist=isolated_nodes, 
+                node_color='lightcoral'
+            )
 
             #labeling the node number
-            nx.draw_networkx_labels(G,pos, labels={node: node for node in G.nodes})
+            nx.draw_networkx_labels(
+                G,
+                pos, 
+                labels={node: node for node in G.nodes}
+            )
             #Highlighting BFS route
-            setting_up_levels(G, pos, root)
+            setting_up_levels(G, pos, root, bfs_tree)
             #Drawing all other edges in the graph
-            nx.draw_networkx_edges(G, pos, edgelist=G.edges())
+            nx.draw_networkx_edges(
+                G, 
+                pos, 
+                edgelist=bg_edges, 
+                edge_color="lightgray")
 
             plt.draw()
             #Specific save -> review later (need to change to pop up graphs)
@@ -199,47 +227,45 @@ def plot_graph(G, root_nodes):
 def random_color():
   return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
-def setting_up_levels(G, pos, root):
+def setting_up_levels(G, pos, root, bfs_tree):
 
-  #Compute BFS tree from root
-  bfs_tree = nx.bfs_tree(G, str(root))
+    #Shortest path from root
+    path_dir = nx.single_source_shortest_path(G, str(root))
 
-  #Shortest path from root
-  path_dir = nx.single_source_shortest_path(G, str(root))
+    #BFS level of each node
+    level_dir = {}
+    for node in path_dir:
+        level_dir[node] = len(path_dir[node]) - 1
 
-  #BFS level of each node
-  level_dir = {}
-  for node in path_dir:
-    level_dir[node] = len(path_dir[node]) - 1
+    #print(f"level_dir: {level_dir}")
 
-  #print(f"level_dir: {level_dir}")
+    #Group edges of BFS tree by level
+    level_edges = {}
+    for edge in bfs_tree.edges():
+        level_edge_check = level_dir[edge[1]]
+        if level_edge_check not in level_edges:
+            level_edges[level_edge_check] = []
+        level_edges[level_edge_check].append(edge)
 
-  #Group edges of BFS tree by level
-  level_edges = {}
-  for edge in bfs_tree.edges():
-    level_edge_check = level_dir[edge[1]]
-    if level_edge_check not in level_edges:
-      level_edges[level_edge_check] = []
-    level_edges[level_edge_check].append(edge)
-
-  #print(f"level_edges: {level_edges}")
+    #print(f"level_edges: {level_edges}")
 
 
-  #level_edges -> ragged array to use for edgelist
-  ragged_edge_array = [level_edges[level] for level in level_edges.keys()]
-  row_in_ragged = []
-  for list_level in level_edges:
-    row_in_ragged.append(level_edges[list_level])
+    #level_edges -> ragged array to use for edgelist
+    ragged_edge_array = [level_edges[level] for level in level_edges.keys()]
+    row_in_ragged = []
+    for list_level in level_edges:
+        row_in_ragged.append(level_edges[list_level])
+        
 
-  #   print(f"ragged_edge_array: {ragged_edge_array}")
-  #Iterate through and save the colors
-  color_holder = []
-  for indv_list in ragged_edge_array:
-    #print(f"indv_list: {indv_list}")
-    current_color = random_color()
-    color_holder.append(current_color)
-    nx.draw_networkx_edges(G, pos, edgelist=indv_list, edge_color=current_color, width=2.0)
-  #print(f"color_holder: {color_holder}")
+    #   print(f"ragged_edge_array: {ragged_edge_array}")
+    #Iterate through and save the colors
+    color_holder = []
+    for indv_list in ragged_edge_array:
+        #print(f"indv_list: {indv_list}")
+        current_color = random_color()
+        color_holder.append(current_color)
+        nx.draw_networkx_edges(G, pos, edgelist=indv_list, edge_color=current_color, width=4.0)
+    #print(f"color_holder: {color_holder}")
 
 
 
