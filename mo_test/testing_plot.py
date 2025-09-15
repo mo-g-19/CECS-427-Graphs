@@ -106,7 +106,7 @@ def plot(G, n: list[int], image_num):
 
     plt.draw()
     #Specific save -> review later (need to change to pop up graphs)
-    plt.savefig(f"bfs_visualization_mo_analyze_ver1_{image_num}{root}.png", dpi=300)
+    plt.savefig(f"bfs_visualization_mo_analyze_ver1_{image_num}.png", dpi=300)
     #clear so doesn't clutter up the next graph
     plt.clf()
 
@@ -163,8 +163,8 @@ def setting_up_levels(G, pos, root):
 # ====================================================================================================
 def main():
   G = load_gml("mo_analyze_graph.gml")
-  roots = [0, 1, 2]
-  number_image = 2
+  roots = []
+  number_image = 3
 
   plot(G, roots, number_image)
 
