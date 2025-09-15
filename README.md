@@ -77,7 +77,7 @@ A compressed archive (.zip or .tar.gz) containing:
 - '--create_random_graph n c': Generate new Erdos-Renyi graph with n nodes and edge probability p = (c * ln(n) ) / n. Overrides '--input'. Nodes must be labeled with strings ("0", "1", "2",..,"n-1")
 
 **Need
-- '--nulti_BFS a1 a2 ...': uses the NetworkX Library to 
+- '--multi_BFS a1 a2 ...': uses the NetworkX Library to return a ragged array of the BFS at root nodes a1, a2, and so on. The root nodes need
 
 accepts one or more starting nodes and computes BFS trees from each, storing all shortest paths. Each BFS tree must be independently visualized and compared
 - '--analyze': perform additional structural analyses:
