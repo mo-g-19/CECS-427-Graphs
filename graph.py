@@ -143,7 +143,7 @@ def plot_graph(G, root_nodes):
 
         # draws all components in a diffrent color
         for cid in unique_cids:
-            nodes = [v for v,c in comp_id.items() if c==cid and v not in isolates]
+            nodes = [v for v,c in comp_id.items() if c==cid]
             if nodes:
                 nx.draw_networkx_nodes(
                     G, 
@@ -158,9 +158,10 @@ def plot_graph(G, root_nodes):
                 G,
                 pos,
                 nodelist=isolates,
-                node_color="lightcoral",
-                alpha=0.6
-            )   
+                node_color="none",
+                edgecolors="red",
+                linewidths=2.0
+                )   
         
         # draw edges
         nx.draw_networkx_edges(
@@ -218,8 +219,9 @@ def plot_graph(G, root_nodes):
                 G, 
                 pos, 
                 nodelist=isolated_nodes, 
-                node_color='lightcoral',
-                alpha=0.6
+                node_color="none",
+                edgecolors="red",
+                linewidths=2.0
             )
 
             #labeling the node number
