@@ -2,6 +2,7 @@ from collections import deque
 import time
 import math
 import argparse
+import random
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -101,47 +102,123 @@ def analyze_avg_shortest_path(G):
         print("This graph is not connected; average shortest path length is undefined.")
 
 
-def plot_graph(G):
-    seed = 951369
-    pos = nx.spring_layout(G, seed=seed)
-    
-    #spliting the nodes into two groups isolated and non isolated
-    isolates = set(nx.isolates(G))
-    non_isolates = [v for v in G.nodes() if v not in isolates]
-    
-    # draws all non_isolates
-    if non_isolates:
-        nx.draw_networkx_nodes(
-            G,
-            pos,
-            nodelist=non_isolates,
-            node_color="cyan",
-            node_size=500,
-    )
+def plot_graph(G, root_nodes):
+    if len(root_nodes) < 1:
+        seed = 951369
+        pos = nx.spring_layout(G, seed=seed)
+        
+        #spliting the nodes into two groups isolated and non isolated
+        isolates = set(nx.isolates(G))
+        non_isolates = [v for v in G.nodes() if v not in isolates]
+        
+        # draws all non_isolates
+        if non_isolates:
+            nx.draw_networkx_nodes(
+                G,
+                pos,
+                nodelist=non_isolates,
+                node_color="cyan",
+                node_size=500,
+        )
 
-    # draws all isolates
-    if isolates:
-        nx.draw_networkx_nodes(
-            G,
-            pos,
-            nodelist=isolates,
-            node_color="lightcoral",
-            node_size=500,
-    )
-    
-    # draw edges
-    nx.draw_networkx_edges(
-        G, 
-        pos, 
-        edge_color="lightgray", 
-        width=1.0, 
-        alpha=0.6
-    )
-    
-    # adds lables to the nodes not required i just added this in when i was verifying the graph will delete later
-    nx.draw_networkx_labels(G, pos, labels={n: n for n in G.nodes()}, font_size=10)
+        # draws all isolates
+        if isolates:
+            nx.draw_networkx_nodes(
+                G,
+                pos,
+                nodelist=isolates,
+                node_color="lightcoral",
+                node_size=500,
+        )
+        
+        # draw edges
+        nx.draw_networkx_edges(
+            G, 
+            pos, 
+            edge_color="lightgray", 
+            width=1.0, 
+            alpha=0.6
+        )
+        
+        # adds lables to the nodes not required i just added this in when i was verifying the graph will delete later
+        nx.draw_networkx_labels(G, pos, labels={n: n for n in G.nodes()}, font_size=10)
 
-    plt.show()
+        plt.show()
+        plt.clf()
+    
+    else: 
+        for root in n:
+            #Isolated nodes list
+            isolated_nodes = list(nx.isolates(G))
+
+            #Connected nodes list
+            connected_nodes = list([node for components in nx.connected_components(G) for node in components])
+
+
+            #drawing the connected nodes first (default color)
+            nx.draw_networkx_nodes(G, pos, nodelist=list(connected_nodes))
+            #root node -> different color
+            nx.draw_networkx_nodes(G, pos, nodelist=[str(root)], node_color='lightcoral', linewidths=3.0)
+            #isolated node -> different color (red)
+            nx.draw_networkx_nodes(G, pos, nodelist=isolated_nodes, node_color='lightcoral')
+
+            #labeling the node number
+            nx.draw_networkx_labels(G,pos, labels={node: node for node in G.nodes})
+            #Highlighting BFS route
+            setting_up_levels(G, pos, root)
+            #Drawing all other edges in the graph
+            nx.draw_networkx_edges(G, pos, edgelist=G.edges())
+
+            plt.draw()
+            #Specific save -> review later (need to change to pop up graphs)
+            plt.show()
+            #clear so doesn't clutter up the next graph
+            plt.clf()
+
+def random_color():
+  return "#{:06x}".format(random.randint(0, 0xFFFFFF))
+
+def setting_up_levels(G, pos, root):
+
+  #Compute BFS tree from root
+  bfs_tree = nx.bfs_tree(G, str(root))
+
+  #Shortest path from root
+  path_dir = nx.single_source_shortest_path(G, str(root))
+
+  #BFS level of each node
+  level_dir = {}
+  for node in path_dir:
+    level_dir[node] = len(path_dir[node]) - 1
+
+  #print(f"level_dir: {level_dir}")
+
+  #Group edges of BFS tree by level
+  level_edges = {}
+  for edge in bfs_tree.edges():
+    level_edge_check = level_dir[edge[1]]
+    if level_edge_check not in level_edges:
+      level_edges[level_edge_check] = []
+    level_edges[level_edge_check].append(edge)
+
+  #print(f"level_edges: {level_edges}")
+
+
+  #level_edges -> ragged array to use for edgelist
+  ragged_edge_array = [level_edges[level] for level in level_edges.keys()]
+  row_in_ragged = []
+  for list_level in level_edges:
+    row_in_ragged.append(level_edges[list_level])
+
+  #   print(f"ragged_edge_array: {ragged_edge_array}")
+  #Iterate through and save the colors
+  color_holder = []
+  for indv_list in ragged_edge_array:
+    #print(f"indv_list: {indv_list}")
+    current_color = random_color()
+    color_holder.append(current_color)
+    nx.draw_networkx_edges(G, pos, edgelist=indv_list, edge_color=current_color, width=2.0)
+  #print(f"color_holder: {color_holder}")
 
 
 
@@ -226,7 +303,7 @@ def main():
         analyze_avg_shortest_path(G)
 
     if args.plot and G:
-        plot_graph(G)
+        plot_graph(G, root_nodes)
 
     if args.output and G:
         dist, parent, source = compute_bfs_meta(G, args.multi_BFS)
