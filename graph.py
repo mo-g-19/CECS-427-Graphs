@@ -132,18 +132,26 @@ def plot_graph(G, root_nodes):
 
         #spliting the nodes into two groups isolated and non isolated
         isolates = set(nx.isolates(G))
-        non_isolates = [v for v in G.nodes() if v not in isolates]
         
-        # draws all non_isolates
-        if non_isolates:
-            nx.draw_networkx_nodes(
-                G,
-                pos,
-                nodelist=non_isolates,
-                node_color="cyan",
-                node_size=500,
-        )
+        # creates a color map to give each component a diffrent color
+        comp_id = compute_component_ids(G)
+        unique_cids = sorted(set(comp_id.values()))
 
+        max_cid = max(unique_cids, default=0)
+        norm = mcolors.Normalize(vmin=0, vmax=max_cid)
+        cmap = cm.tab20
+
+        # draws all components in a diffrent color
+        for cid in unique_cids:
+            nodes = [v for v,c in comp_id.items() if c==cid and v not in isolates]
+            if nodes:
+                nx.draw_networkx_nodes(
+                    G, 
+                    pos, 
+                    nodelist=nodes, 
+                    node_color=[cmap(cid)], 
+                )
+        
         # draws all isolates
         if isolates:
             nx.draw_networkx_nodes(
@@ -151,16 +159,16 @@ def plot_graph(G, root_nodes):
                 pos,
                 nodelist=isolates,
                 node_color="lightcoral",
-                node_size=500,
-        )
+                alpha=0.6
+            )   
         
         # draw edges
         nx.draw_networkx_edges(
             G, 
             pos, 
             edge_color="lightgray", 
-            width=1.0, 
-            alpha=0.6
+            width=4.0, 
+            alpha=0.8
         )
         
         # adds lables to the nodes not required i just added this in when i was verifying the graph will delete later
@@ -203,7 +211,8 @@ def plot_graph(G, root_nodes):
                 G, 
                 pos, 
                 nodelist=isolated_nodes, 
-                node_color='lightcoral'
+                node_color='lightcoral',
+                alpha=0.6
             )
 
             #labeling the node number
@@ -361,6 +370,8 @@ def main():
     if args.output and G:
         dist, parent, source = compute_bfs_meta(G, args.multi_BFS)
         attach_bfs_meta(G, dist, parent, source)
+        comp_id = compute_component_ids(G)
+        attach_component_ids(G, comp_id)
 
         save_gml(G, args.output)
         
