@@ -186,7 +186,13 @@ def plot_graph(G, root_nodes):
         plt.clf()
     
     else: 
-        for root in root_nodes:
+         # Make subplots: 1 row, N columns
+        fig, axes = plt.subplots(1, len(root_nodes), figsize=(6 * len(root_nodes), 6))
+        if len(root_nodes) == 1:
+            axes = [axes]  # keep it iterable
+        
+        for ax, root in zip(axes,root_nodes):
+                    
             #Isolated nodes list
             isolated_nodes = list(nx.isolates(G))
 
@@ -205,6 +211,7 @@ def plot_graph(G, root_nodes):
                 pos, 
                 nodelist=list(connected_nodes),
                 node_color="paleturquoise",
+                ax=ax
             )
             #root node -> different color
             nx.draw_networkx_nodes(
@@ -212,7 +219,8 @@ def plot_graph(G, root_nodes):
                 pos, 
                 nodelist=[str(root)], 
                 node_color='purple', 
-                linewidths=3.0
+                linewidths=3.0,
+                ax=ax
             )
             #isolated node -> different color (red)
             nx.draw_networkx_nodes(
@@ -221,14 +229,16 @@ def plot_graph(G, root_nodes):
                 nodelist=isolated_nodes, 
                 node_color="none",
                 edgecolors="red",
-                linewidths=2.0
+                linewidths=2.0,
+                ax=ax
             )
 
             #labeling the node number
             nx.draw_networkx_labels(
                 G,
                 pos, 
-                labels={node: node for node in G.nodes}
+                labels={node: node for node in G.nodes},
+                ax=ax
             )
             
             #Drawing all other edges in the graph
@@ -238,20 +248,20 @@ def plot_graph(G, root_nodes):
                 edgelist=bg_edges, 
                 edge_color="lightgray",
                 width=4.0,
-                alpha=0.5
+                alpha=0.5,
+                ax=ax
             )
             
             #Highlighting BFS route
-            setting_up_levels(G, pos, root, bfs_tree)
+            setting_up_levels(G, pos, root, bfs_tree, ax)
+            
+            ax.set_title(f"BFS from root {root}")
 
-            plt.draw()
-            #Specific save -> review later (need to change to pop up graphs)
-            plt.show()
-            #clear so doesn't clutter up the next graph
-            plt.clf()
+        plt.tight_layout()
+        plt.show()
 
 
-def setting_up_levels(G, pos, root, bfs_tree):
+def setting_up_levels(G, pos, root, bfs_tree, ax):
 
     #Shortest path from root
     path_dir = nx.single_source_shortest_path(G, str(root))
@@ -295,7 +305,8 @@ def setting_up_levels(G, pos, root, bfs_tree):
             pos, 
             edgelist=indv_list, 
             edge_color=[color], 
-            width=4.0
+            width=4.0,
+            ax=ax
         )
     #print(f"color_holder: {color_holder}")
     
@@ -305,7 +316,7 @@ def setting_up_levels(G, pos, root, bfs_tree):
         Patch(facecolor=cmap(norm(i)), edgecolor='black', label=f"Level {i}")
         for i in range(len(ragged_edge_array))
     ]
-    plt.legend(handles=legend_handles, title="BFS Levels", loc="best")
+    ax.legend(handles=legend_handles, title="BFS Levels", loc="best")
 
 
 
