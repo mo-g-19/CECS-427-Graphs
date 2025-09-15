@@ -71,6 +71,25 @@ A compressed archive (.zip or .tar.gz) containing:
 
 ## Usage Instructions
 
-## Implementation
+## Implementation Reasoning
+- '--input graph_file.gml': uses the NetworkX Library to read the graph from the file path given and save it locally
+
+- '--create_random_graph n c': Generate new Erdos-Renyi graph with n nodes and edge probability p = (c * ln(n) ) / n. Overrides '--input'. Nodes must be labeled with strings ("0", "1", "2",..,"n-1")
+
+**Need
+- '--nulti_BFS a1 a2 ...': uses the NetworkX Library to 
+
+accepts one or more starting nodes and computes BFS trees from each, storing all shortest paths. Each BFS tree must be independently visualized and compared
+- '--analyze': perform additional structural analyses:
+    - **Connected Components**: Count how many distinct connected subgraphs exist
+    - **Cycle Detection**: Determine whether the graph contains any cycles
+    - **Isolated Nodes**: Identify any nodes not connected to one another
+    - **Graph Density**: Compute how dense the graph is (how many edges compared to the maximum possible)
+    - **Average Shortest Path Legenth**: If graph is connected, computes the average number of steps along the shortest paths for all pairs of nodes.
+- '--plot': Visualizes the plot with:
+    - Highlighted shortest baths from each BFS root node
+    - Distinct styling for isolated nodes
+    - Optional visualization of individual connected components
+- '--output out_graph_file.gml': Save the final graph, with all computed attributes to specified .gml file'
 
 ## Examples of commands and outputs
