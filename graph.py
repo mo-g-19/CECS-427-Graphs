@@ -3,6 +3,8 @@ import time
 import math
 import argparse
 import random
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import networkx as nx
 
@@ -185,14 +187,15 @@ def plot_graph(G, root_nodes):
             nx.draw_networkx_nodes(
                 G, 
                 pos, 
-                nodelist=list(connected_nodes)
+                nodelist=list(connected_nodes),
+                node_color="paleturquoise",
             )
             #root node -> different color
             nx.draw_networkx_nodes(
                 G, 
                 pos, 
                 nodelist=[str(root)], 
-                node_color='lightcoral', 
+                node_color='purple', 
                 linewidths=3.0
             )
             #isolated node -> different color (red)
@@ -216,7 +219,10 @@ def plot_graph(G, root_nodes):
                 G, 
                 pos, 
                 edgelist=bg_edges, 
-                edge_color="lightgray")
+                edge_color="lightgray",
+                width=4.0,
+                alpha=0.5
+            )
 
             plt.draw()
             #Specific save -> review later (need to change to pop up graphs)
@@ -224,8 +230,6 @@ def plot_graph(G, root_nodes):
             #clear so doesn't clutter up the next graph
             plt.clf()
 
-def random_color():
-  return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
 def setting_up_levels(G, pos, root, bfs_tree):
 
@@ -256,15 +260,17 @@ def setting_up_levels(G, pos, root, bfs_tree):
     for list_level in level_edges:
         row_in_ragged.append(level_edges[list_level])
         
-
+    #creates a color map for the amout of levels we have
+    max_level = max(level_edges.keys(), default=1)
+    norm = mcolors.Normalize(vmin=0, vmax=max_level)
+    cmap = cm.viridis
+    
     #   print(f"ragged_edge_array: {ragged_edge_array}")
     #Iterate through and save the colors
-    color_holder = []
-    for indv_list in ragged_edge_array:
+    for i, indv_list in enumerate(ragged_edge_array):
         #print(f"indv_list: {indv_list}")
-        current_color = random_color()
-        color_holder.append(current_color)
-        nx.draw_networkx_edges(G, pos, edgelist=indv_list, edge_color=current_color, width=4.0)
+        color = cmap(norm(i))
+        nx.draw_networkx_edges(G, pos, edgelist=indv_list, edge_color=[color], width=4.0)
     #print(f"color_holder: {color_holder}")
 
 
