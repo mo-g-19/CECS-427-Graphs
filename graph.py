@@ -102,7 +102,7 @@ def analyze_avg_shortest_path(G):
         print("This graph is not connected; average shortest path length is undefined.")
 
 
-def plot_graph(G, root_nodes):
+def plot_graph(G, root):
     if len(root_nodes) < 1:
         seed = 951369
         pos = nx.spring_layout(G, seed=seed)
