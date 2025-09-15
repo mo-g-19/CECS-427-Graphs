@@ -2,7 +2,7 @@ from collections import deque
 import time
 import math
 import argparse
-import random
+from matplotlib.patches import Patch
 import matplotlib.cm as cm
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
@@ -171,6 +171,13 @@ def plot_graph(G, root_nodes):
             alpha=0.8
         )
         
+        #its supposed to make the legend for components but it makes it for the isolates too isk what to do about that
+        legend_handles = [
+            Patch(facecolor=cmap(norm(cid)), edgecolor='black', label=f"Component {cid}")
+            for cid in unique_cids
+        ]
+        plt.legend(handles=legend_handles, title="Connected Components", loc="best")
+        
         # adds lables to the nodes not required i just added this in when i was verifying the graph will delete later
         nx.draw_networkx_labels(G, pos, labels={n: n for n in G.nodes()}, font_size=10)
 
@@ -221,8 +228,7 @@ def plot_graph(G, root_nodes):
                 pos, 
                 labels={node: node for node in G.nodes}
             )
-            #Highlighting BFS route
-            setting_up_levels(G, pos, root, bfs_tree)
+            
             #Drawing all other edges in the graph
             nx.draw_networkx_edges(
                 G, 
@@ -232,6 +238,9 @@ def plot_graph(G, root_nodes):
                 width=4.0,
                 alpha=0.5
             )
+            
+            #Highlighting BFS route
+            setting_up_levels(G, pos, root, bfs_tree)
 
             plt.draw()
             #Specific save -> review later (need to change to pop up graphs)
@@ -279,8 +288,22 @@ def setting_up_levels(G, pos, root, bfs_tree):
     for i, indv_list in enumerate(ragged_edge_array):
         #print(f"indv_list: {indv_list}")
         color = cmap(norm(i))
-        nx.draw_networkx_edges(G, pos, edgelist=indv_list, edge_color=[color], width=4.0)
+        nx.draw_networkx_edges(
+            G, 
+            pos, 
+            edgelist=indv_list, 
+            edge_color=[color], 
+            width=4.0
+        )
     #print(f"color_holder: {color_holder}")
+    
+    
+    # creates the legend for the bfs edges
+    legend_handles = [
+        Patch(facecolor=cmap(norm(i)), edgecolor='black', label=f"Level {i}")
+        for i in range(len(ragged_edge_array))
+    ]
+    plt.legend(handles=legend_handles, title="BFS Levels", loc="best")
 
 
 
