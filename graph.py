@@ -101,12 +101,33 @@ def analyze_avg_shortest_path(G):
     else:
         print("This graph is not connected; average shortest path length is undefined.")
 
+def compute_component_ids(G: nx.Graph) -> dict:
+    comp_id = {}
+    for i, comp in enumerate(nx.connected_components(G)):
+        for v in comp:
+            comp_id[v] = i
+    return comp_id
 
-def plot_graph(G, root):
+def attach_component_ids(G: nx.Graph, comp_id: dict):
+    for v, cid in comp_id.items():
+        G.nodes[v]["componentID"] = int(cid)
+
+def compute_isolates(G: nx.Graph) -> list:
+    return list(nx.isolates(G))
+
+def attach_isolate_attr(G: nx.Graph, isolates: list):
+    for v in G.nodes():
+        if v in isolates:
+            G.nodes[v]["isolate"] = "true"
+        else:
+            G.nodes[v]["isolate"] = "false"
+
+def plot_graph(G, root_nodes):
+    seed = 951369
+    pos = nx.spring_layout(G, seed=seed)
+    
     if len(root_nodes) < 1:
-        seed = 951369
-        pos = nx.spring_layout(G, seed=seed)
-        
+
         #spliting the nodes into two groups isolated and non isolated
         isolates = set(nx.isolates(G))
         non_isolates = [v for v in G.nodes() if v not in isolates]
@@ -147,7 +168,7 @@ def plot_graph(G, root):
         plt.clf()
     
     else: 
-        for root in n:
+        for root in root_nodes:
             #Isolated nodes list
             isolated_nodes = list(nx.isolates(G))
 
