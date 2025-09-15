@@ -9,6 +9,7 @@ import matplotlib
 #matplotlib.use("TKAgg")
 import matplotlib.pyplot as plt
 import networkx as nx
+import random
 
 #Functions needed
 #Shortest path per root
@@ -97,11 +98,12 @@ def plot(G, n: list[int], image_num):
 
     #Isolated nodes list
     isolated_nodes = list(nx.isolates(G))
-    print(f"isolated_nodes: {isolated_nodes}")
-    print()
 
     #Connected nodes list
     connected_nodes = list([node for components in nx.connected_components(G) for node in components])
+
+
+    
 
     #drawing the connected nodes first (default color)
     nx.draw_networkx_nodes(G, pos, nodelist=list(connected_nodes))
@@ -113,25 +115,95 @@ def plot(G, n: list[int], image_num):
     #labeling the node #
     nx.draw_networkx_labels(G,pos, labels={node: node for node in G.nodes})
     #Highlighting BFS route
-    nx.draw_networkx_edges(G, pos, edgelist=highlight_edges, edge_color='yellow', width=2)
+    #nx.draw_networkx_edges(G, pos, edgelist=highlight_edges, edge_color='yellow', width=2)
+    setting_up_levels(G, pos, root)
     #Drawing all other edges in the graph
     nx.draw_networkx_edges(G, pos, edgelist=G.edges())
 
     plt.draw()
     #Specific save -> review later (need to change to pop up graphs)
-    plt.savefig(f"bfs_visualization_mo_analyze_ver1_{image_num}{root}.png", dpi=300)
+    plt.savefig(f"bfs_visualization_mo_analyze_ver2_{image_num}{root}.png", dpi=300)
     #clear so doesn't clutter up the next graph
     plt.clf()
 
 def random_color():
   return "#:{:06x}".format(random.randint(0, 0xFFFFFF))
 
+def setting_up_levels(G, pos, root):
+
+  #Compute BFS tree from root
+  bfs_tree = nx.bfs_tree(G, str(root))
+
+  #Shortest path from root
+  path_dir = nx.single_source_shortest_path(G, str(root))
+
+  #BFS level of each node
+  level_dir = {}
+  for node in path_dir:
+    level_dir[node] = len(path_dir[node]) - 1
+
+  print(f"level_dir: {level_dir}")
+
+  #Group edges of BFS tree by level
+  level_edges = {}
+  for edge in bfs_tree.edges():
+    level_edge_check = level_dir[edge[1]]
+    if level_edge_check not in level_edges:
+      level_edges[level_edge_check] = []
+    level_edges[level_edge_check].append(edge)
+
+  print(f"level_edges: {level_edges}")
+
+
+  #level_edges -> ragged array to use for edgelist
+  ragged_edge_array = [level_edges[level] for level in level_edges.keys()]
+  row_in_ragged = []
+  for list_level in level_edges:
+    row_in_ragged.append(level_edges[list_level])
+
+  print(f"ragged_edge_array: {ragged_edge_array}")
+  #Iterate through and save the colors
+  color_holder = []
+  for indv_list in ragged_edge_array:
+    print(f"indv_list: {indv_list}")
+    current_color = random_color()
+    color_holder.append(current_color)
+    nx.draw_networkx_edges(G, pos, edgelist=indv_list, edge_color=current_color, width=2.0)
+
+  """holding = []
+  final = []
+
+  bfs_tree = nx.bfs_tree(G, str(root))
+  bfs_dictionary = nx.single_source_shortest_path(G, str(root))
+  bfs_tracker = list(bfs_dictionary)
+  bfs_counter = 1
+
+  set_color = random_color()
+  print(bfs_tracker)
+
+  for track in range(len(bfs_tracker)-1):
+    if bfs_tracker[track] is not bfs_dictionary[bfs_tracker[bfs_counter]][-1]:
+      bfs_counter = int(bfs_tracker[track])
+      print(holding)
+      final.append(holding)
+      holding.clear()
+      nx.draw_networkx_edges(G, pos, edgelist=holding, edge_color=set_color)
+
+    holding.append(bfs_tree[track])
+
+    print(f"current_node: {bfs_tracker[track]}")
+    print(f"bfs_dictionary: {bfs_dictionary[bfs_tracker[bfs_counter]][-1]}")
+    print()
+    print(f"holding: {holding}")
+    print(f"final: {final}")"""
+
+
 #Try out using nx.draw(G)
 # Main
 # ====================================================================================================
 def main():
   G = load_gml("mo_analyze_graph.gml")
-  roots = [0, 1, 2]
+  roots = [0] #, 1, 2]
   number_image = 2
 
   plot(G, roots, number_image)
