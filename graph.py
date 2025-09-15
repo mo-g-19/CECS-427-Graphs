@@ -222,8 +222,7 @@ def draw_lables(G, pos, ax):
         ax=ax
     )
     
-def draw_bfs(G, pos, root, ax):
-    
+def compute_all_BFS_level(G, root):
     #Compute BFS tree from root
     bfs_tree = nx.bfs_tree(G, str(root))
 
@@ -253,6 +252,12 @@ def draw_bfs(G, pos, root, ax):
     row_in_ragged = []
     for list_level in level_edges:
         row_in_ragged.append(level_edges[list_level])
+    
+    return ragged_edge_array
+
+def draw_bfs(G, pos, root, ax):
+
+    ragged_edge_array = compute_all_BFS_level(G, root)
         
     #creates a color map for the amout of levels we have
     max_level = max(level_edges.keys(), default=1)
