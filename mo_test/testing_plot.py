@@ -52,58 +52,16 @@ def load_gml(path: str):
 
 #Outline of plot function
 def plot(G, n: list[int], image_num):
-
-
-  #nx.draw(G, with_labels=True, font_weight='bold', pos=nx.spring_layout(G))
-  
-  #Figuring out a way to differentiate the isolated nodes
-  # with_labels=True, font_weight='bold',
-  #with_labels=True, font_weight='bold'
-
-
-  """ for nx.draw_networkx_labels; need labels =
-  for target, values in labels.items():
-    print(f"{target}: {values}")
-  """
-
-
-  """for start_node in n:
-    bfs_tree = list(nx.bfs_tree(G, str(start_node)).edges())
-    print(bfs_tree)
-    #print(bfs_tree.edges())"""
-
-  """#visited = {node: False for node in list(G.nodes())}
-  holder = 2
-  bfs_dictionary = nx.single_source_shortest_path(G, '1')
-  bfs_tracker = list(bfs_dictionary)
-  set_color = random_color()
-  print(bfs_tracker)
-
-
-#  if target[0] == bfs_tracker[n-1]
-
-#  target[-1], target[-2]
-
-  for current_node in bfs_tracker:
-    if len(bfs_dictionary[current_node]) == holder:"""
-
   #need a set location
   pos = nx.spring_layout(G, k=0.5)   #maybe add seed=42 later
 
   for root in n:
-    bfs_tree = nx.bfs_tree(G, str(root))
-    highlight_edges = list(bfs_tree.edges())
-
-    
-
     #Isolated nodes list
     isolated_nodes = list(nx.isolates(G))
 
     #Connected nodes list
     connected_nodes = list([node for components in nx.connected_components(G) for node in components])
 
-
-    
 
     #drawing the connected nodes first (default color)
     nx.draw_networkx_nodes(G, pos, nodelist=list(connected_nodes))
@@ -112,10 +70,9 @@ def plot(G, n: list[int], image_num):
     #isolated node -> different color (red)
     nx.draw_networkx_nodes(G, pos, nodelist=isolated_nodes, node_color='#ff9a98')
 
-    #labeling the node #
+    #labeling the node number
     nx.draw_networkx_labels(G,pos, labels={node: node for node in G.nodes})
     #Highlighting BFS route
-    #nx.draw_networkx_edges(G, pos, edgelist=highlight_edges, edge_color='yellow', width=2)
     setting_up_levels(G, pos, root)
     #Drawing all other edges in the graph
     nx.draw_networkx_edges(G, pos, edgelist=G.edges())
@@ -125,9 +82,38 @@ def plot(G, n: list[int], image_num):
     plt.savefig(f"bfs_visualization_mo_analyze_ver2_{image_num}{root}.png", dpi=300)
     #clear so doesn't clutter up the next graph
     plt.clf()
+  
+  #for cases where there isn't a bfs root_node list
+  if len(n) < 1:
+    #nx.draw_networkx_edges(G, pos, edgelist=highlight_edges, edge_color='yellow', width=2)
+    #Isolated nodes list
+    isolated_nodes = list(nx.isolates(G))
+
+    #Connected nodes list
+    connected_nodes = list([node for components in nx.connected_components(G) for node in components])
+
+
+    #drawing the connected nodes first (default color)
+    nx.draw_networkx_nodes(G, pos, nodelist=list(connected_nodes))
+    #isolated node -> different color (red)
+    nx.draw_networkx_nodes(G, pos, nodelist=isolated_nodes, node_color='#ff9a98')
+
+    #labeling the node number
+    nx.draw_networkx_labels(G,pos, labels={node: node for node in G.nodes})
+
+    #Drawing all edges in the graph
+    nx.draw_networkx_edges(G, pos, edgelist=G.edges())
+
+    plt.draw()
+    #Specific save -> review later (need to change to pop up graphs)
+    plt.savefig(f"bfs_visualization_mo_analyze_ver1_{image_num}{root}.png", dpi=300)
+    #clear so doesn't clutter up the next graph
+    plt.clf()
+
+
 
 def random_color():
-  return "#:{:06x}".format(random.randint(0, 0xFFFFFF))
+  return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
 def setting_up_levels(G, pos, root):
 
@@ -142,7 +128,7 @@ def setting_up_levels(G, pos, root):
   for node in path_dir:
     level_dir[node] = len(path_dir[node]) - 1
 
-  print(f"level_dir: {level_dir}")
+  #print(f"level_dir: {level_dir}")
 
   #Group edges of BFS tree by level
   level_edges = {}
@@ -152,7 +138,7 @@ def setting_up_levels(G, pos, root):
       level_edges[level_edge_check] = []
     level_edges[level_edge_check].append(edge)
 
-  print(f"level_edges: {level_edges}")
+  #print(f"level_edges: {level_edges}")
 
 
   #level_edges -> ragged array to use for edgelist
@@ -161,41 +147,15 @@ def setting_up_levels(G, pos, root):
   for list_level in level_edges:
     row_in_ragged.append(level_edges[list_level])
 
-  print(f"ragged_edge_array: {ragged_edge_array}")
+  #   print(f"ragged_edge_array: {ragged_edge_array}")
   #Iterate through and save the colors
   color_holder = []
   for indv_list in ragged_edge_array:
-    print(f"indv_list: {indv_list}")
+    #print(f"indv_list: {indv_list}")
     current_color = random_color()
     color_holder.append(current_color)
     nx.draw_networkx_edges(G, pos, edgelist=indv_list, edge_color=current_color, width=2.0)
-
-  """holding = []
-  final = []
-
-  bfs_tree = nx.bfs_tree(G, str(root))
-  bfs_dictionary = nx.single_source_shortest_path(G, str(root))
-  bfs_tracker = list(bfs_dictionary)
-  bfs_counter = 1
-
-  set_color = random_color()
-  print(bfs_tracker)
-
-  for track in range(len(bfs_tracker)-1):
-    if bfs_tracker[track] is not bfs_dictionary[bfs_tracker[bfs_counter]][-1]:
-      bfs_counter = int(bfs_tracker[track])
-      print(holding)
-      final.append(holding)
-      holding.clear()
-      nx.draw_networkx_edges(G, pos, edgelist=holding, edge_color=set_color)
-
-    holding.append(bfs_tree[track])
-
-    print(f"current_node: {bfs_tracker[track]}")
-    print(f"bfs_dictionary: {bfs_dictionary[bfs_tracker[bfs_counter]][-1]}")
-    print()
-    print(f"holding: {holding}")
-    print(f"final: {final}")"""
+  #print(f"color_holder: {color_holder}")
 
 
 #Try out using nx.draw(G)
@@ -203,7 +163,7 @@ def setting_up_levels(G, pos, root):
 # ====================================================================================================
 def main():
   G = load_gml("mo_analyze_graph.gml")
-  roots = [0] #, 1, 2]
+  roots = [0, 1, 2]
   number_image = 2
 
   plot(G, roots, number_image)
