@@ -87,12 +87,11 @@ A compressed archive (.zip or .tar.gz) containing:
 
 - '--plot': Creates a plot graph utalizing the Matplotlib Library, NetworkX Library, and helper functions draw_isolates, draw_default_nodes, draw_component_nodes, draw_edges, draw_labels, and draw_bfs to:
     - draw the isolated nodes in a distinct red color, and label each node with the corresponding the id
-        - If '--multi_BFS' isn't called: draw all edges
+        - If '--multi_BFS' isn't called: draw all edges and draw different subcomponents in a graph
         - If '--multi_BFS' is called: for each starting node in the list, create a ragged array where each row corresponds to a level, and the columns are the nodes corresponding to that level. Then draw each edge in a color that specifies the source node's level
-    - Highlighted shortest baths from each BFS root node
-    - Distinct styling for isolated nodes
-    - Optional visualization of individual connected components
 
-- '--output out_graph_file.gml': Save the final graph, with all computed attributes to specified .gml file'
+
+- '--output out_graph_file.gml': Save the final graph to the specified gml file path. Saves the node id, label, and which subconnection it is in (in componentID). Needs to be a .gml file.
+    - If --multi_BFS is called: computes the shortest path (dist) to the closest root node (source), the node's parent (parent), and whether it is an isolated node or not (isolate)
 
 ## Examples of commands and outputs
