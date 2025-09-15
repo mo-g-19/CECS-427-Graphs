@@ -245,22 +245,23 @@ def compute_all_BFS_level(G, root):
         level_edges[level_edge_check].append(edge)
 
     #print(f"level_edges: {level_edges}")
-
+    max_level = max(level_edges.keys(), default=1)
 
     #level_edges -> ragged array to use for edgelist
     ragged_edge_array = [level_edges[level] for level in level_edges.keys()]
     row_in_ragged = []
     for list_level in level_edges:
         row_in_ragged.append(level_edges[list_level])
+
     
-    return ragged_edge_array
+
+    return ragged_edge_array, max_level
 
 def draw_bfs(G, pos, root, ax):
 
-    ragged_edge_array = compute_all_BFS_level(G, root)
+    ragged_edge_array, max_level = compute_all_BFS_level(G, root)
         
     #creates a color map for the amout of levels we have
-    max_level = max(level_edges.keys(), default=1)
     norm = mcolors.Normalize(vmin=0, vmax=max_level)
     cmap = cm.hsv
     
