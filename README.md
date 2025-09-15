@@ -86,9 +86,9 @@ A compressed archive (.zip or .tar.gz) containing:
     - **Average Shortest Path Legenth**: If graph is connected, computes the average number of steps along the shortest paths for all pairs of nodes.
 
 - '--plot': Creates a plot graph utalizing the Matplotlib Library, NetworkX Library, and helper functions draw_isolates, draw_default_nodes, draw_component_nodes, draw_edges, draw_labels, and draw_bfs to:
-    - draw the isolated nodes in a distinct red color
-        - If '--multi_BFS' isn't called: connect the 
-        - If '--multi_BFS' is called: 
+    - draw the isolated nodes in a distinct red color, and label each node with the corresponding the id
+        - If '--multi_BFS' isn't called: draw all edges
+        - If '--multi_BFS' is called: for each starting node in the list, create a ragged array where each row corresponds to a level, and the columns are the nodes corresponding to that level. Then draw each edge in a color that specifies the source node's level
     - Highlighted shortest baths from each BFS root node
     - Distinct styling for isolated nodes
     - Optional visualization of individual connected components
