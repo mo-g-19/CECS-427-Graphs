@@ -9,8 +9,10 @@ import matplotlib.pyplot as plt
 import networkx as nx
 
 
-# Functions
+
+# GML Set Up Functions 
 # ====================================================================================================
+
 def load_gml(path: str):
     print(f"load_gml called with path={path}")
     Graph = nx.read_gml(path)
@@ -19,7 +21,6 @@ def load_gml(path: str):
 def save_gml(G, path: str):
     nx.write_gml(G, path)
     print(f"Graph saved to {path}")
-
 
 def create_random_graph(n: int, c: float):
     seed = int(time.time())
@@ -32,12 +33,11 @@ def create_random_graph(n: int, c: float):
         G.nodes[v]["label"] = v
     return  G
 
-def multi_BFS(G, start_nodes: list[str]):
-    all_BFS = []
-    for indv_node in start_nodes:
-        indv_BFS = nx.single_source_shortest_path(G, indv_node)
-        all_BFS.append(indv_BFS)
-    return all_BFS
+
+
+
+# GML Metadata Functions 
+# ====================================================================================================
 
 def compute_bfs_meta(G: nx.Graph, roots):
     # checks all the roots to make sure they are in g and also that they are stings
@@ -76,6 +76,46 @@ def attach_bfs_meta(G: nx.Graph, dist, parent, source):
             G.nodes[v]["source"] = "undefined"
             G.nodes[v]["parent"] = "undefined"
 
+def compute_component_ids(G: nx.Graph) -> dict:
+    comp_id = {}
+    for i, comp in enumerate(nx.connected_components(G)):
+        for v in comp:
+            comp_id[v] = i
+    return comp_id
+
+def attach_component_ids(G: nx.Graph, comp_id: dict):
+    for v, cid in comp_id.items():
+        G.nodes[v]["componentID"] = int(cid)
+
+def compute_isolates(G: nx.Graph) -> list:
+    return list(nx.isolates(G))
+
+def attach_isolate_attr(G: nx.Graph, isolates: list):
+    for v in G.nodes():
+        if v in isolates:
+            G.nodes[v]["isolate"] = "true"
+        else:
+            G.nodes[v]["isolate"] = "false"
+            
+            
+            
+            
+# BFS Functions
+# ====================================================================================================
+            
+def multi_BFS(G, start_nodes: list[str]):
+    all_BFS = []
+    for indv_node in start_nodes:
+        indv_BFS = nx.single_source_shortest_path(G, indv_node)
+        all_BFS.append(indv_BFS)
+    return all_BFS
+
+
+
+
+# Print Analysis Functions
+# ====================================================================================================
+
 def analyze_components(G):
     comps = list(nx.connected_components(G))
     print("Connected components:", comps)
@@ -103,153 +143,89 @@ def analyze_avg_shortest_path(G):
     else:
         print("This graph is not connected; average shortest path length is undefined.")
 
-def compute_component_ids(G: nx.Graph) -> dict:
-    comp_id = {}
-    for i, comp in enumerate(nx.connected_components(G)):
-        for v in comp:
-            comp_id[v] = i
-    return comp_id
 
-def attach_component_ids(G: nx.Graph, comp_id: dict):
-    for v, cid in comp_id.items():
-        G.nodes[v]["componentID"] = int(cid)
 
-def compute_isolates(G: nx.Graph) -> list:
-    return list(nx.isolates(G))
 
-def attach_isolate_attr(G: nx.Graph, isolates: list):
-    for v in G.nodes():
-        if v in isolates:
-            G.nodes[v]["isolate"] = "true"
-        else:
-            G.nodes[v]["isolate"] = "false"
+# Plotting Helper Functions
+# ====================================================================================================
 
-def plot_graph(G, root_nodes):
-    seed = 951369
-    pos = nx.spring_layout(G, seed=seed)
+def draw_isolates(G, pos, ax):
+    #spliting the nodes into two groups isolated and non isolated
+    isolates = set(nx.isolates(G))
     
-    if len(root_nodes) < 1:
-
-        #spliting the nodes into two groups isolated and non isolated
-        isolates = set(nx.isolates(G))
-        
-        # creates a color map to give each component a diffrent color
-        comp_id = compute_component_ids(G)
-        unique_cids = sorted(set(comp_id.values()))
-
-        max_cid = max(unique_cids, default=0)
-        norm = mcolors.Normalize(vmin=0, vmax=max_cid)
-        cmap = cm.tab20
-
-        # draws all components in a diffrent color
-        for cid in unique_cids:
-            nodes = [v for v,c in comp_id.items() if c==cid and v not in isolates]
-            if nodes:
-                nx.draw_networkx_nodes(
-                    G, 
-                    pos, 
-                    nodelist=nodes, 
-                    node_color=[cmap(cid)], 
-                )
-        
-        # draws all isolates
-        if isolates:
-            nx.draw_networkx_nodes(
-                G,
-                pos,
-                nodelist=isolates,
-                node_color="lightcoral",
-                alpha=0.6
+    # draws all isolates
+    if isolates:
+        nx.draw_networkx_nodes(
+            G,
+            pos,
+            nodelist=isolates,
+            node_color="none",
+            edgecolors="red",
+            linewidths=2.0,
+            ax=ax
             )   
         
-        # draw edges
+def draw_default_nodes(G, pos, ax):
+    #drawing the connected nodes first (default color)
+    nx.draw_networkx_nodes(
+        G, 
+        pos, 
+        nodelist=G.nodes(),
+        node_color="paleturquoise",
+        ax=ax
+    )
+
+def draw_component_nodes(G, pos, ax):
+    # creates a color map to give each component a diffrent color
+    comp_id = compute_component_ids(G)
+    unique_cids = sorted(set(comp_id.values()))
+
+    max_cid = max(unique_cids, default=0)
+    norm = mcolors.Normalize(vmin=0, vmax=max_cid)
+    cmap = cm.tab20
+    
+    # draws all components in a diffrent color
+    for cid in unique_cids:
+        nodes = [v for v,c in comp_id.items() if c==cid]
+        if nodes:
+            nx.draw_networkx_nodes(
+                G, 
+                pos, 
+                nodelist=nodes, 
+                node_color=[cmap(cid)], 
+                ax=ax
+            )
+    
+    #Draws Legend for components
+    legend_handles = [
+    Patch(facecolor=cmap(norm(cid)), edgecolor='black', label=f"Component {cid}")
+    for cid in unique_cids
+    ]
+    
+def draw_edges(G, pos, ax):
+#Drawing all edges in the graph
         nx.draw_networkx_edges(
             G, 
             pos, 
-            edge_color="lightgray", 
-            width=4.0, 
-            alpha=0.8
+            edge_color="lightgray",
+            width=4.0,
+            alpha=0.7,
+            ax=ax
         )
-        
-        #its supposed to make the legend for components but it makes it for the isolates too isk what to do about that
-        legend_handles = [
-            Patch(facecolor=cmap(norm(cid)), edgecolor='black', label=f"Component {cid}")
-            for cid in unique_cids
-        ]
-        plt.legend(handles=legend_handles, title="Connected Components", loc="best")
-        
-        # adds lables to the nodes not required i just added this in when i was verifying the graph will delete later
-        nx.draw_networkx_labels(G, pos, labels={n: n for n in G.nodes()}, font_size=10)
-
-        plt.show()
-        plt.clf()
     
-    else: 
-        for root in root_nodes:
-            #Isolated nodes list
-            isolated_nodes = list(nx.isolates(G))
-
-            #Connected nodes list
-            connected_nodes = list([node for components in nx.connected_components(G) for node in components])
-
-            #Compute BFS tree from root
-            bfs_tree = nx.bfs_tree(G, str(root))
-            bfs_edges = {tuple(sorted(e)) for e in bfs_tree.edges()}    #list of edges in the bfs
-            all_edges = {tuple(sorted(e)) for e in G.edges()}           #list of all edges
-            bg_edges  = list(all_edges - bfs_edges)                     #list of 
-            
-            #drawing the connected nodes first (default color)
-            nx.draw_networkx_nodes(
-                G, 
-                pos, 
-                nodelist=list(connected_nodes),
-                node_color="paleturquoise",
-            )
-            #root node -> different color
-            nx.draw_networkx_nodes(
-                G, 
-                pos, 
-                nodelist=[str(root)], 
-                node_color='purple', 
-                linewidths=3.0
-            )
-            #isolated node -> different color (red)
-            nx.draw_networkx_nodes(
-                G, 
-                pos, 
-                nodelist=isolated_nodes, 
-                node_color='lightcoral',
-                alpha=0.6
-            )
-
-            #labeling the node number
-            nx.draw_networkx_labels(
-                G,
-                pos, 
-                labels={node: node for node in G.nodes}
-            )
-            
-            #Drawing all other edges in the graph
-            nx.draw_networkx_edges(
-                G, 
-                pos, 
-                edgelist=bg_edges, 
-                edge_color="lightgray",
-                width=4.0,
-                alpha=0.5
-            )
-            
-            #Highlighting BFS route
-            setting_up_levels(G, pos, root, bfs_tree)
-
-            plt.draw()
-            #Specific save -> review later (need to change to pop up graphs)
-            plt.show()
-            #clear so doesn't clutter up the next graph
-            plt.clf()
-
-
-def setting_up_levels(G, pos, root, bfs_tree):
+def draw_lables(G, pos, ax):
+    #labeling the node number
+    nx.draw_networkx_labels(
+        G,
+        pos, 
+        labels={node: node for node in G.nodes},
+        ax=ax
+    )
+    
+def draw_bfs(G, pos, root, ax):
+    
+    #Compute BFS tree from root
+    bfs_tree = nx.bfs_tree(G, str(root))
 
     #Shortest path from root
     path_dir = nx.single_source_shortest_path(G, str(root))
@@ -281,7 +257,7 @@ def setting_up_levels(G, pos, root, bfs_tree):
     #creates a color map for the amout of levels we have
     max_level = max(level_edges.keys(), default=1)
     norm = mcolors.Normalize(vmin=0, vmax=max_level)
-    cmap = cm.viridis
+    cmap = cm.hsv
     
     #   print(f"ragged_edge_array: {ragged_edge_array}")
     #Iterate through and save the colors
@@ -293,17 +269,70 @@ def setting_up_levels(G, pos, root, bfs_tree):
             pos, 
             edgelist=indv_list, 
             edge_color=[color], 
-            width=4.0
+            width=4.0,
+            ax=ax
         )
     #print(f"color_holder: {color_holder}")
     
+    #root node -> different color
+    nx.draw_networkx_nodes(
+        G, 
+        pos, 
+        nodelist=[str(root)], 
+        node_color='red', 
+        linewidths=3.0,
+        ax=ax
+    )    
     
     # creates the legend for the bfs edges
     legend_handles = [
         Patch(facecolor=cmap(norm(i)), edgecolor='black', label=f"Level {i}")
         for i in range(len(ragged_edge_array))
     ]
-    plt.legend(handles=legend_handles, title="BFS Levels", loc="best")
+    ax.legend(handles=legend_handles, title="BFS Levels", loc="best")
+
+
+
+# Plotting  Function
+# ====================================================================================================
+    
+def plot_graph(G, root_nodes):
+    seed = 951369
+    pos = nx.spring_layout(G, seed=seed)
+    
+    if len(root_nodes) < 1:
+        fig, ax = plt.subplots(1, 1, figsize=(7, 7))
+        
+        draw_isolates(G, pos, ax)
+        draw_component_nodes(G, pos, ax)
+        draw_edges(G, pos, ax)
+                
+        # adds lables to the nodes not required i just added this in when i was verifying the graph will delete later
+        nx.draw_networkx_labels(G, pos, labels={n: n for n in G.nodes()}, font_size=10)
+
+        plt.show()
+        plt.clf()
+    
+    else: 
+         # Make subplots: 1 row, N columns
+        fig, axes = plt.subplots(1, len(root_nodes), figsize=(6 * len(root_nodes), 6))
+        if len(root_nodes) == 1:
+            axes = [axes]  # keep it iterable
+        
+        for ax, root in zip(axes,root_nodes):
+            draw_default_nodes(G, pos, ax)            
+            draw_isolates(G, pos, ax)                       
+            draw_edges(G, pos, ax)
+                                    
+            #Highlighting BFS route
+            draw_bfs(G, pos, root, ax)
+            
+            draw_lables(G, pos, ax)
+            
+            ax.set_title(f"BFS from root {root}")
+
+        plt.tight_layout()
+        plt.show()
 
 
 
@@ -355,6 +384,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 
+
 # Main
 # ====================================================================================================
 def main():
@@ -379,6 +409,9 @@ def main():
             for target, path in indv_BFS.items():
                 print(f"{target}: {path}")
             print()
+            
+        dist, parent, source = compute_bfs_meta(G, args.multi_BFS)
+        attach_bfs_meta(G, dist, parent, source)
 
     if args.analyze and G:
         analyze_components(G)
@@ -386,15 +419,22 @@ def main():
         analyze_isolates(G)
         analyze_density(G)
         analyze_avg_shortest_path(G)
+        
+        comp_id = compute_component_ids(G)
+        attach_component_ids(G, comp_id)
+        
+        isolates = compute_isolates(G)
+        attach_isolate_attr(G, isolates)
 
     if args.plot and G:
         plot_graph(G, root_nodes)
 
     if args.output and G:
-        dist, parent, source = compute_bfs_meta(G, args.multi_BFS)
-        attach_bfs_meta(G, dist, parent, source)
         comp_id = compute_component_ids(G)
         attach_component_ids(G, comp_id)
+        
+        isolates = compute_isolates(G)
+        attach_isolate_attr(G, isolates)
 
         save_gml(G, args.output)
         
