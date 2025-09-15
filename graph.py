@@ -333,6 +333,7 @@ def plot_graph(G, root_nodes):
 
         plt.tight_layout()
         plt.show()
+        plt.clf()
 
 
 
