@@ -79,7 +79,6 @@ A compressed archive (.zip or .tar.gz) containing:
 
 - '--analyze': perform additional structural analyses and printing it out including how many connected components exist, the isolated nodes of a graph (if there are any), if the graph has any cycles, the graph's density, and the average shortest path length
 
-
 - '--plot': Creates a plot graph utalizing the Matplotlib Library, NetworkX Library, and helper functions draw_isolates, draw_default_nodes, draw_component_nodes, draw_edges, draw_labels, and draw_bfs to:
     - draw the isolated nodes in a distinct red color, and label each node with the corresponding the id
         - If '--multi_BFS' and  '--show_components' are not called: draw all edges and nodes in a default color
@@ -98,6 +97,7 @@ A compressed archive (.zip or .tar.gz) containing:
 	    - avg_shortest_path - the average shortest distance of the graph 
 	    - componentID - the id of the component the node is a part of
 	    - isolate - is true if the node is an isolate false if it is not
+
 - '--show_components': adds different coloring for separate components when called and adds them to the legend
 
 ## Implementation Reasoning
@@ -107,7 +107,8 @@ A compressed archive (.zip or .tar.gz) containing:
 ##### Architecture & modularity
 A single file design was chosen in order to simplify the final submission and increase the ease of grading. however the design was kept modular for function reusability, minimize file size and increase readability. 
 
-##### Multi-scource BFS
+##### Multi-source BFS
+When given an array of accepted node ids, our multi-source BFS function does both multiple individual BFS and (if --analyze is called) the closest root, the distance of the per-root shortest-path, and the parent of all nodes. If there are multiple roots with the same distance to the node, the root with the higher id number is chosen. For indiviual BFS, the NetworkX function single_source_shortest_path() is used to calculate the path in input root_node order and stored in a ragged array. It is then saved in a global variable in case it is needed for --plot. For multi-source BFS, all nodes have an "undefined" distance, in case they are isolated nodes. Then based on a calculated bfs queue, it loops through each node's distance from the root and parent, and only keeps the information from the shortest distance. Both parts has a complexity of O(R(V + E)) where R is the number of roots stated.
 
 #### Arg Parser
 We implemented and arg parser to parse the arguments what were passed into the program. This was required and the only notable implentation was our additon of the -- show_components argument that was not included in the instructions. We chose to do this because the the instructions specify "Optional" visualization of individual connected components and given matplotlib does not have any toggle functionality we thought this was the best way to implement the optionality
@@ -117,6 +118,9 @@ Many design choices were made here, for example in the case of visualizing the B
 ##### metadata
 The metadata that we chose to add was the the data found in the --analyze as well as the data from the --multi_BFS. We chose only to include meta data that was either directly stated in the instructions or that was calculated for another function, because anymore would have been outside the scope of the assignment. 
 ##### Robustness & edge cases
+The robustness was tested multiple ways to ensure the code will exit safely and print an error message if the users did not input in the correct format. We tested no --input or --create_random_graph, both an improper input and output file (that ends in something other than .gml), trying to take an input file that does not exist, trying to take a malformed input file, not enough requirements for --create_random_graph and --multi_BFS, and improper inputs for --create_random_graph (such as strings or doubles for the n value) and --multi_BFS (such as root node ids not existing).
+
+There are a couple of edge cases for this file. Notably, larger graphs take a long time. This is due to choosing a spring_layout for rendering the graphs. The layout was chosen specifically so connected nodes are drawn closer together, the spacing allows for fewer overlaps/clutter, the same positioning 'seed' creates the same graph, and it is a very popular layout in NetworkX. This is also due to the time complexity of finding the shortest path in a multi-root per-root shortest path when calling --multi_BFS. However, this graph cleanly creates an all isolated nodes graph when c is 0, and when taking in all isolated nodes graph and the --output command, it reproduces the exact same graph.
 
 ## Examples of commands and outputs
 

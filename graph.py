@@ -135,13 +135,12 @@ def analyze_components(G):
     return num_comps
 
 def analyze_cycles(G):
-    is_cycle = not nx.is_forest(G)
+    is_cycle = bool(not nx.is_forest(G))
     if is_cycle:
         print("This graph has a cycle.")
-        return "true"
     else:
         print("This graph is acyclic (a forest).")
-        return "false"
+    return is_cycle
 
 def analyze_isolates(G):
     isolates = list(nx.isolates(G))
@@ -405,7 +404,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     group.add_argument(
         "--input",
-        type=str,
+        type=argparse.FileType("r"),
         help="Path to input GML file"
         )
     parser.add_argument(
@@ -464,7 +463,7 @@ def main():
     root_nodes = []     # local root nodes variable -> made in multi_BFS, used in plot
 
     #ensure the paths (input and output end with .gml)
-    if args.input and not args.input.endswith(".gml"):
+    if args.input and not args.input.name.endswith(".gml"):
         parser.error("--input file must be a .gml file")
 
     if args.output and not args.output.endswith(".gml"):
@@ -483,9 +482,9 @@ def main():
     #Into regular calls
     if args.input:
         try:
-            G = load_gml(args.input)
+            G = load_gml(args.input.name)
         except (nx.NetworkXError, ValueError, UnicodeDecodeError) as err:
-            parser.error(f"--input Malformed GML in {args.input}: {err}")
+            parser.error(f"--input: Malformed GML in {getattr(args.input, 'name', '<stdin>')}: {err}")
 
     if args.create_random_graph:
         #check that n is an int and c is a float/int
@@ -516,7 +515,7 @@ def main():
         holder_for_n = G.number_of_nodes() - 1
         for node in args.multi_BFS:
             if not node.isdigit():
-                parser.error(f"--multi_BFS {node!r} is not valid int node id")
+                parser.error(f"--multi_BFS {node!r} is not valid int node id (must be positive value)")
             node_val = int(node)
             if node_val > holder_for_n or node_val < 0:
                 bad.append(node)
@@ -529,9 +528,10 @@ def main():
             for target, path in indv_BFS.items():
                 print(f"{target}: {path}")
             print()
-            
-        dist, parent, source = compute_bfs_meta(G, args.multi_BFS)
-        attach_bfs_meta(G, dist, parent, source)
+        
+        if args.analyze:
+            dist, parent, source = compute_bfs_meta(G, args.multi_BFS)
+            attach_bfs_meta(G, dist, parent, source)
 
     if args.analyze and G:
         attach_components_meta(G, analyze_components(G))
