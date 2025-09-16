@@ -1,0 +1,44 @@
+All Malformed Graph tests: All caught
+
+Mismatched type
+graph [
+  node [
+    id not_a_number    # ← unquoted token (invalid); NOT "not_a_number"
+    label "X"
+  ]
+]
+
+Edge with an invalid/non existant label
+graph [
+  node [ id 0 label "A" ]
+  node [ id 1 label "B" ]
+  edge [
+    source foo         # ← invalid (foo is unquoted identifier)
+    target 1
+  ]
+]
+
+Single quote in label
+graph [
+  node [
+    id 0
+    label "A
+  ]
+]
+
+Unbalanced brackets
+graph [
+  node [
+    id 0
+    label "A"
+  node [
+    id 1
+    label "B"
+  ]
+]
+
+Non-Ascii (the french e)
+graph [
+  node [ id 0 label "Café" ]  # 'é' is non-ASCII
+]
+

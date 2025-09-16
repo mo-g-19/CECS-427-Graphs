@@ -21,13 +21,18 @@ import sys
 # GML Set Up Functions 
 # ====================================================================================================
 
-"""To take in a graph .gml file
+"""To take in a graph .gml file, and check that the input ID values are ints
 Input: either a local file with just the name, or the file's entire path
 Output: the graph that corresponds to the the file name
 """
 def load_gml(path: str):
     print(f"load_gml called with path={path}")
     Graph = nx.read_gml(path)
+
+    for node in Graph.nodes():
+        if node.isdigit() is False:
+            raise ValueError(f"--input: node id {node} is not appropriate. Must be an int.")
+
     return Graph
 
 """To save a graph to a specific .gml file
@@ -437,7 +442,7 @@ def plot_graph(G, root_nodes, show_components):
         plt.clf()
 
     else: 
-         # Make subplots: 1 row, N columns
+        # Make subplots: 1 row, N columns
         fig, axes = plt.subplots(1, len(root_nodes), figsize=(6 * len(root_nodes), 6))
         if len(root_nodes) == 1:
             axes = [axes]  # keep it iterable
@@ -535,6 +540,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 # Main
 # ====================================================================================================
+"""Builds the parser, and calls the functions that correspond to said argument. It also checks for additional erros such as requiring a .gml file, ensuring that the input .gml file is properly made, the node ids are digits and within range, etc.
+"""
 def main():
     parser = build_parser()
     args = parser.parse_args()
@@ -604,10 +611,6 @@ def main():
 
         root_nodes = args.multi_BFS
         all_BFS = multi_BFS(G, root_nodes)
-        """for indv_BFS in all_BFS:
-            for target, path in indv_BFS.items():
-                print(f"{target}: {path}")
-            print()"""
         
         if args.analyze:
             dist, parent, source = compute_bfs_meta(G, args.multi_BFS)
