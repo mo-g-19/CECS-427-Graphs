@@ -2,6 +2,7 @@ from collections import deque
 import time
 import math
 import argparse
+from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
 import matplotlib.cm as cm
 import matplotlib.colors as mcolors
@@ -164,6 +165,13 @@ def draw_isolates(G, pos, ax):
             linewidths=2.0,
             ax=ax
             )   
+    iso_handle = Patch(
+        facecolor="none",    # hollow fill
+        edgecolor="red",     # red border
+        linewidth=2.0,
+        label="Isolates"
+    )
+    return iso_handle
         
 def draw_default_nodes(G, pos, ax):
     #drawing the connected nodes first (default color)
@@ -197,10 +205,11 @@ def draw_component_nodes(G, pos, ax):
             )
     
     #Draws Legend for components
-    legend_handles = [
+    comp_handles  = [
     Patch(facecolor=cmap(norm(cid)), edgecolor='black', label=f"Component {cid}")
     for cid in unique_cids
     ]
+    return comp_handles
     
 def draw_edges(G, pos, ax):
 #Drawing all edges in the graph
@@ -252,9 +261,6 @@ def compute_all_BFS_level(G, root):
     row_in_ragged = []
     for list_level in level_edges:
         row_in_ragged.append(level_edges[list_level])
-
-    
-
     return ragged_edge_array, max_level
 
 def draw_bfs(G, pos, root, ax):
@@ -291,34 +297,47 @@ def draw_bfs(G, pos, root, ax):
     )    
     
     # creates the legend for the bfs edges
-    legend_handles = [
-        Patch(facecolor=cmap(norm(i)), edgecolor='black', label=f"Level {i}")
+    bfs_handles = [
+        Line2D([0], [0], color=cmap(norm(i)), lw=3, label=f"Level {i}")
         for i in range(len(ragged_edge_array))
     ]
-    ax.legend(handles=legend_handles, title="BFS Levels", loc="best")
+    return bfs_handles
+
 
 
 
 # Plotting  Function
 # ====================================================================================================
     
-def plot_graph(G, root_nodes):
+def plot_graph(G, root_nodes, show_components):
     seed = 951369
     pos = nx.spring_layout(G, seed=seed)
     
     if len(root_nodes) < 1:
         fig, ax = plt.subplots(1, 1, figsize=(7, 7))
         
-        draw_isolates(G, pos, ax)
-        draw_component_nodes(G, pos, ax)
+        combined_handles = []
+        
+        if show_components:
+            comp_handles = draw_component_nodes(G, pos, ax)
+            combined_handles += comp_handles
+        else:
+            draw_default_nodes(G, pos, ax)
+            
+        iso_handle = draw_isolates(G, pos, ax)
+        combined_handles.append(iso_handle)
+        
         draw_edges(G, pos, ax)
                 
         # adds lables to the nodes not required i just added this in when i was verifying the graph will delete later
-        nx.draw_networkx_labels(G, pos, labels={n: n for n in G.nodes()}, font_size=10)
+        draw_lables(G, pos, ax)
 
+        if combined_handles:
+            ax.legend(handles=combined_handles, title="Legend", loc="best")
+            
         plt.show()
         plt.clf()
-    
+
     else: 
          # Make subplots: 1 row, N columns
         fig, axes = plt.subplots(1, len(root_nodes), figsize=(6 * len(root_nodes), 6))
@@ -326,17 +345,29 @@ def plot_graph(G, root_nodes):
             axes = [axes]  # keep it iterable
         
         for ax, root in zip(axes,root_nodes):
-            draw_default_nodes(G, pos, ax)            
-            draw_isolates(G, pos, ax)                       
+            if show_components:
+                comp_handles = draw_component_nodes(G, pos, ax)
+            else:
+                draw_default_nodes(G, pos, ax) 
+            
+            iso_handle = draw_isolates(G, pos, ax)
             draw_edges(G, pos, ax)
                                     
             #Highlighting BFS route
-            draw_bfs(G, pos, root, ax)
+            bfs_handles = draw_bfs(G, pos, root, ax)
             
             draw_lables(G, pos, ax)
             
             ax.set_title(f"BFS from root {root}")
-
+            
+            combined_handles = []
+            if show_components and comp_handles:
+                combined_handles += comp_handles
+            combined_handles += bfs_handles
+            combined_handles.append(iso_handle)  
+            
+            ax.legend(handles=combined_handles, title="Legend", loc="best")
+            
         plt.tight_layout()
         plt.show()
 
@@ -384,6 +415,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--plot",
         action="store_true",
         help="Show graph plot",
+    )
+    
+    parser.add_argument(
+    "--show_components",
+    action="store_true",
+    help="Shows Components as differently colored nodes",
     )
 
     return parser
@@ -433,7 +470,7 @@ def main():
         attach_isolate_attr(G, isolates)
 
     if args.plot and G:
-        plot_graph(G, root_nodes)
+        plot_graph(G, root_nodes, args.show_components)
 
     if args.output and G:
         comp_id = compute_component_ids(G)
