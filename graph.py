@@ -118,8 +118,8 @@ def multi_BFS(G, start_nodes: list[str]):
 # ====================================================================================================
 
 def analyze_components(G):
-    comps = list(nx.connected_components(G))
-    print("Connected components:", comps)
+    num_comps = nx.number_connected_components(G)
+    print("Number of connected components:", num_comps)
 
 def analyze_cycles(G):
     if not nx.is_forest(G):
