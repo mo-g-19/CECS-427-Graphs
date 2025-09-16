@@ -68,6 +68,7 @@ A compressed archive (.zip or .tar.gz) containing:
 
 # Student Side for Documentation
 ## Mo Gibson
+## Philip Tran
 
 ## Usage Instructions
 - '--input graph_file.gml': uses the NetworkX Library to read the graph from the file path given and save it locally
@@ -76,19 +77,53 @@ A compressed archive (.zip or .tar.gz) containing:
 
 - '--multi_BFS a1 a2 ...': uses the NetworkX Library to return a ragged array of the BFS at root nodes a1, a2, and so on. The root nodes must use inputs 0, 1, 2, ... n-1.
 
-- '--analyze': perform additional structural analyses and printing it out including the isolated nodes of a graph (if there are any), what nodes are connected (if they have edges to other nodes or not), if the graph has any cycles, the graph's density, and the average shortest path length
+- '--analyze': perform additional structural analyses and printing it out including how many connected components exist, the isolated nodes of a graph (if there are any), if the graph has any cycles, the graph's density, and the average shortest path length
 
 
 - '--plot': Creates a plot graph utalizing the Matplotlib Library, NetworkX Library, and helper functions draw_isolates, draw_default_nodes, draw_component_nodes, draw_edges, draw_labels, and draw_bfs to:
     - draw the isolated nodes in a distinct red color, and label each node with the corresponding the id
-        - If '--multi_BFS' isn't called: draw all edges and draw different subcomponents in a graph
-        - If '--multi_BFS' is called: Each edge is drawn in a specific color that corrolates to the target node's level
+        - If '--multi_BFS' and  '--show_components' are not called: draw all edges and nodes in a default color
+        - If '--multi_BFS' is called: Each edge is drawn in a specific color that correlates to the target node's level, and the adds the correlation to the legend
+        - If '--show_components' is called draw the nodes of each separate component in a different color and add them to the legend
 
-- '--output out_graph_file.gml': Save the final graph to the specified gml file path. Saves the node id, label, and which subconnection it is in (in componentID). Needs to be a .gml file.
-    - If --multi_BFS is called: computes the shortest path (dist) to the closest root node (source), the node's parent (parent), and whether it is an isolated node or not (isolate)
+- '--output out_graph_file.gml': Save the final graph to the specified gml file path. Saves the node id, label, and the following metadata: Needs to be a .gml file.
+    - If --multi_BFS is called: 
+	    - source - to the closest root node 
+	    - dist - computes the shortest path 
+	    - parent - the node's parent . 
+    - if --analyze is called: 
+	    - num_components - the number of seperate components
+	    - has_cycle - true is the graph has a cycle false otherwise
+	    - density - the density of the graph
+	    - avg_shortest_path - the average shortest distance of the graph 
+	    - componentID - the id of the component the node is a part of
+	    - isolate - is true if the node is an isolate false if it is not
+- '--show_components': adds different coloring for separate components when called and adds them to the legend
 
 ## Implementation Reasoning
 
 - If '--multi_BFS' is called: for each starting node in the list, create a ragged array where each row corresponds to a level, and the columns are the nodes corresponding to that level. Then draw each edge in a color that specifies the source node's level
+- build_parser
+##### Architecture & modularity
+A single file design was chosen in order to simplify the final submission and increase the ease of grading. however the design was kept modular for function reusability, minimize file size and increase readability. 
+
+##### Multi-scource BFS
+
+#### Arg Parser
+We implemented and arg parser to parse the arguments what were passed into the program. This was required and the only notable implentation was our additon of the -- show_components argument that was not included in the instructions. We chose to do this because the the instructions specify "Optional" visualization of individual connected components and given matplotlib does not have any toggle functionality we thought this was the best way to implement the optionality
+
+##### Visualization
+Many design choices were made here, for example in the case of visualizing the BFS we decided to use subplots in order to visualize all BFS paths at once instead of having them be graphed as a fill plot where you could only view one at a time. Also we chose to color the nodes instead of labeling them to increase visual readability. We also chose to use a gradient to choose the colors of the edge levels so that we did not have to hard code the colors. This has the added benefit of scalability in that nonmatter how many levels there are or if the number of levels differ from BFS to BFS in the same graph the correct colors will be assigned. Also isolates were chosen to be represented with a red border around the node 
+##### metadata
+The metadata that we chose to add was the the data found in the --analyze as well as the data from the --multi_BFS. We chose only to include meta data that was either directly stated in the instructions or that was calculated for another function, because anymore would have been outside the scope of the assignment. 
+##### Robustness & edge cases
 
 ## Examples of commands and outputs
+
+python ./graph.py --create_random_graph 200 1.5 --multi_BFS 0 5 20 --analyze --plot --output final_graph.gml
+
+![[Pasted image 20250915210244.png]]![[Pasted image 20250915210355.png]]
+
+python ./graph.py --input data.gml --analyze --plot
+
+![[Pasted image 20250915220116.png]]![[Pasted image 20250915220157.png]]

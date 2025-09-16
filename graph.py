@@ -135,12 +135,13 @@ def analyze_components(G):
     return num_comps
 
 def analyze_cycles(G):
-    is_cycle = boolean(not nx.is_forest(G))
+    is_cycle = not nx.is_forest(G)
     if is_cycle:
         print("This graph has a cycle.")
+        return "true"
     else:
         print("This graph is acyclic (a forest).")
-    return is_cycle
+        return "false"
 
 def analyze_isolates(G):
     isolates = list(nx.isolates(G))
@@ -404,7 +405,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     group.add_argument(
         "--input",
-        type=argparse.FileType("r"),
+        type=str,
         help="Path to input GML file"
         )
     parser.add_argument(
@@ -463,7 +464,7 @@ def main():
     root_nodes = []     # local root nodes variable -> made in multi_BFS, used in plot
 
     #ensure the paths (input and output end with .gml)
-    if args.input and not args.input.name.endswith(".gml"):
+    if args.input and not args.input.endswith(".gml"):
         parser.error("--input file must be a .gml file")
 
     if args.output and not args.output.endswith(".gml"):
@@ -484,7 +485,7 @@ def main():
         try:
             G = load_gml(args.input)
         except (nx.NetworkXError, ValueError, UnicodeDecodeError) as err:
-            parser.error(f"--input Malformed GML in {getattr(args.input, 'name', '<stdin>')}: {err}")
+            parser.error(f"--input Malformed GML in {args.input}: {err}")
 
     if args.create_random_graph:
         #check that n is an int and c is a float/int
