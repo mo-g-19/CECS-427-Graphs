@@ -135,7 +135,7 @@ def analyze_components(G):
     return num_comps
 
 def analyze_cycles(G):
-    is_cycle = not nx.is_forest(G)
+    is_cycle = boolean(not nx.is_forest(G))
     if is_cycle:
         print("This graph has a cycle.")
     else:
@@ -399,7 +399,10 @@ def plot_graph(G, root_nodes, show_components):
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Graph CLI")
 
-    parser.add_argument(
+    #require that at least --input or --create_random_graph is called
+    group = parser.add_mutually_exclusive_group(required=True)
+
+    group.add_argument(
         "--input",
         type=str,
         help="Path to input GML file"
@@ -410,10 +413,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Path to output GML file"
         )
 
-    parser.add_argument(
+    group.add_argument(
         "--create_random_graph",
         nargs=2,
         metavar=("n", "c"),
+        type=str,
         help="Generate random graph with n nodes and parameter c",
     )
 
@@ -443,6 +447,7 @@ def build_parser() -> argparse.ArgumentParser:
     help="Shows Components as differently colored nodes",
     )
 
+
     return parser
 
 
@@ -457,15 +462,56 @@ def main():
     G = None            # local graph variable -> all functions
     root_nodes = []     # local root nodes variable -> made in multi_BFS, used in plot
 
+    #ensure the paths (input and output end with .gml)
+    if args.input and not args.input.endswith(".gml"):
+        parser.error("--input file must be a .gml file")
+
+    if args.output and not args.output.endswith(".gml"):
+        parser.error("--output file must be a .gml file")
+
+    #Into regular calls
     if args.input:
         G = load_gml(args.input)
 
     if args.create_random_graph:
+        #check that n is an int and c is a float/int
+        if args.create_random_graph:
+            raw_n, raw_c = args.create_random_graph
+
+            try:
+                n = int(raw_n)
+            except ValueError:
+                parser.error("--create_random_graph n (for number of nodes) value must be an int")
+            if n <= 0:
+                parser.error("--create_random_graph n must be > 0")
+            
+            try:
+                c = float(raw_c)
+            except ValueError:
+                parser.error("--create_random_graph c (for likelihood of giant component) value must be a float or an int")
+            if c < 0:
+                parser.error("--create_random_graph c (for likelihood of giant component) value can not be < 0")
+
+        #setting n, c, and creating the Graph to use
         n = int(args.create_random_graph[0])
         c = float(args.create_random_graph[1])
         G = create_random_graph(n, c)
 
+    if args.multi_BFS is not None and len(args.multi_BFS) == 0:
+        parser.error("--multi_BFS needs at least one root node")
+
     if args.multi_BFS and G:
+        bad = []
+        holder_for_n = len(G.number_of_nodes()) - 1
+        for node in args.multi_BFS:
+            if not node.isdigit():
+                parser.error(f"--multi_BFS {node!r} is not valid int node id")
+            node_val = int(node)
+            if node_val > holder_for_n or node_val < 0:
+                bad.append(node_val)
+        if bad:
+            parser.error(f"--multi_BFS contains out-of-range node ids: {bad}\nValid range is [0, {holder_for_n}]")
+
         root_nodes = args.multi_BFS
         all_BFS = multi_BFS(G, root_nodes)
         for indv_BFS in all_BFS:
@@ -508,4 +554,7 @@ def main():
         
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except SystemExit as e:
+        sys.exit(e.code)
