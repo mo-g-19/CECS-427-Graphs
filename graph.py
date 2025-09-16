@@ -8,6 +8,7 @@ import matplotlib.cm as cm
 import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import networkx as nx
+import sys
 
 
 
@@ -84,8 +85,9 @@ def compute_component_ids(G: nx.Graph) -> dict:
             comp_id[v] = i
     return comp_id
 
-def attach_components_meta(G, num_comps):
-    G.graph["num_components"] = num_comps
+def attach_component_ids(G: nx.Graph, comp_id: dict):
+    for v, cid in comp_id.items():
+        G.nodes[v]["componentID"] = int(cid)
 
 def compute_isolates(G: nx.Graph) -> list:
     return list(nx.isolates(G))
@@ -97,8 +99,8 @@ def attach_isolate_attr(G: nx.Graph, isolates: list):
         else:
             G.nodes[v]["isolate"] = "false"
 
-def attach_components_meta(G):
-    G.graph["num_components"] = analyze_components(G)
+def attach_components_meta(G, num_comps):
+    G.graph["num_components"] = num_comps
 
 def attach_cycles_meta(G, is_cycle):
     G.graph["has_cycle"] = is_cycle
@@ -482,7 +484,7 @@ def main():
         try:
             G = load_gml(args.input)
         except (nx.NetworkXError, ValueError, UnicodeDecodeError) as err:
-            parser.error(f"Malformed GML in {getattr(args.input, 'name', '<stdin>')}: {err}")
+            parser.error(f"--input Malformed GML in {getattr(args.input, 'name', '<stdin>')}: {err}")
 
     if args.create_random_graph:
         #check that n is an int and c is a float/int
@@ -492,21 +494,21 @@ def main():
             try:
                 n = int(raw_n)
             except ValueError:
-                parser.error("--create_random_graph n (for number of nodes) value must be an int")
+                parser.error("--create_random_graph n: must be an int")
             if n <= 0:
-                parser.error("--create_random_graph n must be > 0")
+                parser.error("--create_random_graph n: must be > 0")
             
             try:
                 c = float(raw_c)
             except ValueError:
-                parser.error("--create_random_graph c (for likelihood of giant component) value must be a float or an int")
+                parser.error("--create_random_graph c: must be a float or an int")
             if c < 0:
-                parser.error("--create_random_graph c (for likelihood of giant component) value can not be < 0")
+                parser.error("--create_random_graph c: not be < 0")
 
         G = create_random_graph(n, c)
 
     if args.multi_BFS is not None and len(args.multi_BFS) == 0:
-        parser.error("--multi_BFS needs at least one root node")
+        parser.error("--multi_BFS: require at least one root node")
 
     if args.multi_BFS and G:
         bad = []
@@ -516,9 +518,9 @@ def main():
                 parser.error(f"--multi_BFS {node!r} is not valid int node id")
             node_val = int(node)
             if node_val > holder_for_n or node_val < 0:
-                bad.append(node_val)
+                bad.append(node)
         if bad:
-            parser.error(f"--multi_BFS contains out-of-range node ids: {bad}\nValid range is [0, {holder_for_n}]")
+            parser.error(f"--multi_BFS contains out-of-range node ids: {bad}. Valid range is [0, {holder_for_n}]")
 
         root_nodes = args.multi_BFS
         all_BFS = multi_BFS(G, root_nodes)
@@ -558,7 +560,7 @@ def main():
         
 
 if __name__ == "__main__":
-    try:
-        main()
-    except SystemExit as e:
-        sys.exit(e.code)
+    #try:
+    main()
+    #except SystemExit as e:
+    #    sys.exit(e.code)
