@@ -305,7 +305,7 @@ def draw_component_nodes(G, pos, ax):
     ]
     return comp_handles
 
-"""Sets the color and dimension for all edges"""" 
+"""Sets the color and dimension for all edges"""
 def draw_edges(G, pos, ax):
 #Drawing all edges in the graph
         nx.draw_networkx_edges(
@@ -604,10 +604,10 @@ def main():
 
         root_nodes = args.multi_BFS
         all_BFS = multi_BFS(G, root_nodes)
-        for indv_BFS in all_BFS:
+        """for indv_BFS in all_BFS:
             for target, path in indv_BFS.items():
                 print(f"{target}: {path}")
-            print()
+            print()"""
         
         if args.analyze:
             dist, parent, source = compute_bfs_meta(G, args.multi_BFS)
