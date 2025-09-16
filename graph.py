@@ -1,3 +1,9 @@
+"""
+9/16/2025
+This file was created by Mo Gibson and Philip Tran
+Purpose: To take in graph files or make a random Erods-Renjy graph, find the BFS path of a set of root nodes, analyze graph features, plot the graph, and return a .gml graph file with additional graph or bfs data
+"""
+
 from collections import deque
 import time
 import math
@@ -15,15 +21,27 @@ import sys
 # GML Set Up Functions 
 # ====================================================================================================
 
+"""To take in a graph .gml file
+Input: either a local file with just the name, or the file's entire path
+Output: the graph that corresponds to the the file name
+"""
 def load_gml(path: str):
     print(f"load_gml called with path={path}")
     Graph = nx.read_gml(path)
     return Graph
 
+"""To save a graph to a specific .gml file
+Input: the output file name and a graph
+Output:
+"""
 def save_gml(G, path: str):
     nx.write_gml(G, path)
     print(f"Graph saved to {path}")
 
+"""To make a random Erdos-Renyi graph with a given number of nodes and edge probability liklihood
+Input: The number of nodes in the graph (n: int) and the likilihood of edge probability (c: float)
+Output: An Erdos-Renyi graph
+"""
 def create_random_graph(n: int, c: float):
     seed = int(time.time())
     p = (c * math.log(n)) / n                   #calculating the probablility based off the probablilty funtion in the assignment
@@ -40,7 +58,10 @@ def create_random_graph(n: int, c: float):
 
 # GML Metadata Functions 
 # ====================================================================================================
-
+"""For a given list of root nodes, return back the multi-source dictionaries for all node's shortest-path to a root node, which root node it was, and the parent of the node for that BFS path
+Input: A graph and a list of root node ids
+Output: Based on the shortest BFS path in the list of root nodes, dictionaries for all node's shortest-path to a root node, which root node it was, and the parent of the node for that BFS path
+"""
 def compute_bfs_meta(G: nx.Graph, roots):
     # checks all the roots to make sure they are in g and also that they are stings
     roots = [str(r) for r in (roots or []) if str(r) in G]
@@ -67,6 +88,11 @@ def compute_bfs_meta(G: nx.Graph, roots):
 
     return dist, parent, source
 
+"""To take the dictionaries of multi-source BFS from compute_bfs_meta, and add the data as attributes to the nodes in the graph.
+    If the node isn't connected to any listed BFS, the attributes are undefined
+Input: A graph and dictionaries for a previously defined list of root nodes the current node's shortest distance, the root node in that distance, and it's parent in that path
+Output: 
+"""
 def attach_bfs_meta(G: nx.Graph, dist, parent, source):
     for v in G.nodes():
         if v in dist:
@@ -78,6 +104,10 @@ def attach_bfs_meta(G: nx.Graph, dist, parent, source):
             G.nodes[v]["source"] = "undefined"
             G.nodes[v]["parent"] = "undefined"
 
+""" To create a dictionary where all the nodes in a subgraph of connected_components have the same value
+Input: A graph
+Output: A dictionary that groups nodes that are connected to each other with the same value
+"""
 def compute_component_ids(G: nx.Graph) -> dict:
     comp_id = {}
     for i, comp in enumerate(nx.connected_components(G)):
@@ -85,13 +115,25 @@ def compute_component_ids(G: nx.Graph) -> dict:
             comp_id[v] = i
     return comp_id
 
+"""Save the information found in compute_component_ids as one of the node's attribute
+Input: A graph and a dictionary where all the nodes connected to each other have the same value
+Output: 
+"""
 def attach_component_ids(G: nx.Graph, comp_id: dict):
     for v, cid in comp_id.items():
         G.nodes[v]["componentID"] = int(cid)
 
+""" Returns a list of isolated nodes
+Input: A graph
+Output: A list of isolated nodes' ids
+"""
 def compute_isolates(G: nx.Graph) -> list:
     return list(nx.isolates(G))
 
+"""Add an attribute where if a node is isolated, it is true, and false if not.
+Input: A graph and a list of the isolated nodes in that graph
+Output: 
+"""
 def attach_isolate_attr(G: nx.Graph, isolates: list):
     for v in G.nodes():
         if v in isolates:
@@ -99,6 +141,8 @@ def attach_isolate_attr(G: nx.Graph, isolates: list):
         else:
             G.nodes[v]["isolate"] = "false"
 
+"""The following 4 functions are to add the meta data, specifically the number of components, whether the graph is a cycle, the graph density, and if a bfs is calculated previously, what the shortest distance is
+"""
 def attach_components_meta(G, num_comps):
     G.graph["num_components"] = num_comps
 
@@ -115,7 +159,10 @@ def attach_avg_shortest_path_meta(G, avg_len):
             
 # BFS Functions
 # ====================================================================================================
-            
+"""To list the BFS starting at one of the list of root_nodes given
+Input: A graph and a list of root nodes
+Output: A ragged array of BFS where the row corresponds to the root node list order
+"""
 def multi_BFS(G, start_nodes: list[str]):
     all_BFS = []
     for indv_node in start_nodes:
@@ -128,12 +175,19 @@ def multi_BFS(G, start_nodes: list[str]):
 
 # Print Analysis Functions
 # ====================================================================================================
-
+"""To print out and return a list of connected nodes (nodes that have edges)
+Input: A graph
+Output: A list of all the connected components
+"""
 def analyze_components(G):
     num_comps = nx.number_connected_components(G)
     print("Number of connected components:", num_comps)
     return num_comps
 
+"""To determine if a graph has a cycle or not
+Input: A graph
+Output: A true/false that corresponds to if it has a cycle or not
+"""
 def analyze_cycles(G):
     is_cycle = bool(not nx.is_forest(G))
     if is_cycle:
@@ -142,6 +196,10 @@ def analyze_cycles(G):
         print("This graph is acyclic (a forest).")
     return is_cycle
 
+"""To see if a graph has any isolated nodes
+Input: A graph
+Output: 
+"""
 def analyze_isolates(G):
     isolates = list(nx.isolates(G))
     if isolates:
@@ -149,12 +207,19 @@ def analyze_isolates(G):
     else:
         print("No isolated nodes.")
 
+"""To return the graph's density
+Input: A graph
+Output: A float that corresponds to the graph's density
+"""
 def analyze_density(G):
     density = nx.density(G)
     print("Density:", density)
     return density
     
-
+"""If the graph does have edges, use the NetworkX function to see the average path length for the shortest distance between possible pairs (only if they are connected nodes)
+Input: A graph
+Output: 
+"""
 def analyze_avg_shortest_path(G):
     if nx.is_connected(G):
         avg_len = nx.average_shortest_path_length(G)
@@ -169,7 +234,10 @@ def analyze_avg_shortest_path(G):
 
 # Plotting Helper Functions
 # ====================================================================================================
-
+"""Take all the isolate nodes and draw them in red to differentiate them
+Input: A graph, the set positioning for the entire graph, and the axis for isolated nodes
+Output: A matplot patch that is 2D containing the face color and edge color for a graph
+"""
 def draw_isolates(G, pos, ax):
     #spliting the nodes into two groups isolated and non isolated
     isolates = set(nx.isolates(G))
@@ -193,6 +261,8 @@ def draw_isolates(G, pos, ax):
     )
     return iso_handle
         
+"""When no BFS is called, draw all nodes the same color
+"""
 def draw_default_nodes(G, pos, ax):
     #drawing the connected nodes first (default color)
     nx.draw_networkx_nodes(
@@ -203,6 +273,10 @@ def draw_default_nodes(G, pos, ax):
         ax=ax
     )
 
+"""Take all the nodes that aren't isolated or the root and draw them in a soft color to differentiate them
+Input: A graph, the set positioning for the entire graph, and the axis for isolated nodes
+Output: A matplot patch that is 2D containing the face color and edge color for a graph
+"""
 def draw_component_nodes(G, pos, ax):
     # creates a color map to give each component a diffrent color
     comp_id = compute_component_ids(G)
@@ -230,7 +304,8 @@ def draw_component_nodes(G, pos, ax):
     for cid in unique_cids
     ]
     return comp_handles
-    
+
+"""Sets the color and dimension for all edges"""" 
 def draw_edges(G, pos, ax):
 #Drawing all edges in the graph
         nx.draw_networkx_edges(
@@ -241,7 +316,8 @@ def draw_edges(G, pos, ax):
             alpha=0.7,
             ax=ax
         )
-    
+
+"""Sets the size and lable name for numbering all nodes"""
 def draw_lables(G, pos, ax):
     #labeling the node number
     nx.draw_networkx_labels(
@@ -250,7 +326,9 @@ def draw_lables(G, pos, ax):
         labels={node: node for node in G.nodes},
         ax=ax
     )
-    
+
+"""Creating a ragged array where the row number corresponds to the level of the nodes inside the ragged array, and return the maximum number of levels
+"""
 def compute_all_BFS_level(G, root):
     #Compute BFS tree from root
     bfs_tree = nx.bfs_tree(G, str(root))
@@ -263,7 +341,6 @@ def compute_all_BFS_level(G, root):
     for node in path_dir:
         level_dir[node] = len(path_dir[node]) - 1
 
-    #print(f"level_dir: {level_dir}")
 
     #Group edges of BFS tree by level
     level_edges = {}
@@ -273,7 +350,6 @@ def compute_all_BFS_level(G, root):
             level_edges[level_edge_check] = []
         level_edges[level_edge_check].append(edge)
 
-    #print(f"level_edges: {level_edges}")
     max_level = max(level_edges.keys(), default=1)
 
     #level_edges -> ragged array to use for edgelist
@@ -283,6 +359,8 @@ def compute_all_BFS_level(G, root):
         row_in_ragged.append(level_edges[list_level])
     return ragged_edge_array, max_level
 
+"""Takes the ragged array of levels and the maximum number of levels to create a BFS graph where an edge corresponds to the node's level for that specific root
+"""
 def draw_bfs(G, pos, root, ax):
 
     ragged_edge_array, max_level = compute_all_BFS_level(G, root)
@@ -291,10 +369,8 @@ def draw_bfs(G, pos, root, ax):
     norm = mcolors.Normalize(vmin=0, vmax=max_level)
     cmap = cm.hsv
     
-    #   print(f"ragged_edge_array: {ragged_edge_array}")
     #Iterate through and save the colors
     for i, indv_list in enumerate(ragged_edge_array):
-        #print(f"indv_list: {indv_list}")
         color = cmap(norm(i))
         nx.draw_networkx_edges(
             G, 
@@ -304,7 +380,6 @@ def draw_bfs(G, pos, root, ax):
             width=4.0,
             ax=ax
         )
-    #print(f"color_holder: {color_holder}")
     
     #root node -> different color
     nx.draw_networkx_nodes(
@@ -328,7 +403,10 @@ def draw_bfs(G, pos, root, ax):
 
 # Plotting  Function
 # ====================================================================================================
-    
+"""Takes all the helper functions to create either:
+-if no bfs was called: the isolated nodes a different color and a regular graph with edges
+-if bfs was previously called: create a graph for each root node, and the color of the edges corresponds to the node's bfs level
+"""
 def plot_graph(G, root_nodes, show_components):
     seed = 951369
     pos = nx.spring_layout(G, seed=seed)
@@ -396,6 +474,8 @@ def plot_graph(G, root_nodes, show_components):
 
 # Arg Parser
 # ====================================================================================================
+"""To take all the arguments in the command line, save relevant information needed to compute the functions, and make some checks that it follows the input instructions
+"""
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Graph CLI")
 
@@ -561,7 +641,4 @@ def main():
         
 
 if __name__ == "__main__":
-    #try:
     main()
-    #except SystemExit as e:
-    #    sys.exit(e.code)
