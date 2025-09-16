@@ -70,15 +70,13 @@ A compressed archive (.zip or .tar.gz) containing:
 ## Mo Gibson
 
 ## Usage Instructions
-
-## Implementation Reasoning
 - '--input graph_file.gml': uses the NetworkX Library to read the graph from the file path given and save it locally
 
 - '--create_random_graph n c': Generate new Erdos-Renyi graph with n nodes and edge probability p = (c * ln(n) ) / n. Overrides '--input'. Nodes must be labeled with strings ("0", "1", "2",..,"n-1")
 
 - '--multi_BFS a1 a2 ...': uses the NetworkX Library to return a ragged array of the BFS at root nodes a1, a2, and so on. The root nodes must use inputs 0, 1, 2, ... n-1.
 
-- '--analyze': perform additional structural analyses:
+- '--analyze': perform additional structural analyses and printing it out including the isolated nodes of a graph (if there are any), what nodes are connected (if they have edges to other nodes or not)
     - **Connected Components**: Count how many distinct connected subgraphs exist
     - **Cycle Detection**: Determine whether the graph contains any cycles
     - **Isolated Nodes**: Identify any nodes not connected to one another
@@ -88,10 +86,13 @@ A compressed archive (.zip or .tar.gz) containing:
 - '--plot': Creates a plot graph utalizing the Matplotlib Library, NetworkX Library, and helper functions draw_isolates, draw_default_nodes, draw_component_nodes, draw_edges, draw_labels, and draw_bfs to:
     - draw the isolated nodes in a distinct red color, and label each node with the corresponding the id
         - If '--multi_BFS' isn't called: draw all edges and draw different subcomponents in a graph
-        - If '--multi_BFS' is called: for each starting node in the list, create a ragged array where each row corresponds to a level, and the columns are the nodes corresponding to that level. Then draw each edge in a color that specifies the source node's level
-
+        - If '--multi_BFS' is called: Each edge is drawn in a specific color that corrolates to the target node's level
 
 - '--output out_graph_file.gml': Save the final graph to the specified gml file path. Saves the node id, label, and which subconnection it is in (in componentID). Needs to be a .gml file.
     - If --multi_BFS is called: computes the shortest path (dist) to the closest root node (source), the node's parent (parent), and whether it is an isolated node or not (isolate)
+
+## Implementation Reasoning
+
+- If '--multi_BFS' is called: for each starting node in the list, create a ragged array where each row corresponds to a level, and the columns are the nodes corresponding to that level. Then draw each edge in a color that specifies the source node's level
 
 ## Examples of commands and outputs
