@@ -97,7 +97,19 @@ def attach_isolate_attr(G: nx.Graph, isolates: list):
             G.nodes[v]["isolate"] = "true"
         else:
             G.nodes[v]["isolate"] = "false"
-            
+
+def attach_components_meta(G):
+    G.graph["num_components"] = analyze_components(G)
+
+def attach_cycles_meta(G):
+    G.graph["has_cycle"] = analyze_cycles(G)
+
+def attach_density_meta(G):
+    G.graph["density"] = analyze_density(G)
+
+def attach_avg_shortest_path_meta(G):
+    avg_len = analyze_avg_shortest_path(G)
+    G.graph["avg_shortest_path"] = avg_len if avg_len is not None else "undefined"
             
             
             
@@ -120,12 +132,15 @@ def multi_BFS(G, start_nodes: list[str]):
 def analyze_components(G):
     num_comps = nx.number_connected_components(G)
     print("Number of connected components:", num_comps)
+    return num_comps
 
 def analyze_cycles(G):
-    if not nx.is_forest(G):
+    is_cycle = not nx.is_forest(G)
+    if is_cycle:
         print("This graph has a cycle.")
     else:
         print("This graph is acyclic (a forest).")
+    return is_cycle
 
 def analyze_isolates(G):
     isolates = list(nx.isolates(G))
@@ -135,14 +150,19 @@ def analyze_isolates(G):
         print("No isolated nodes.")
 
 def analyze_density(G):
-    print("Density:", nx.density(G))
+    density = nx.density(G)
+    print("Density:", density)
+    return density
+    
 
 def analyze_avg_shortest_path(G):
     if nx.is_connected(G):
         avg_len = nx.average_shortest_path_length(G)
         print("Average shortest path length:", avg_len)
+        return avg_len
     else:
         print("This graph is not connected; average shortest path length is undefined.")
+    return None
 
 
 
@@ -468,6 +488,11 @@ def main():
         
         isolates = compute_isolates(G)
         attach_isolate_attr(G, isolates)
+        
+        attach_components_meta(G)
+        attach_cycles_meta(G)
+        attach_density_meta(G)
+        attach_avg_shortest_path_meta(G)
 
     if args.plot and G:
         plot_graph(G, root_nodes, args.show_components)
