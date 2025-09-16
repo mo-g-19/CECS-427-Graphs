@@ -84,9 +84,8 @@ def compute_component_ids(G: nx.Graph) -> dict:
             comp_id[v] = i
     return comp_id
 
-def attach_component_ids(G: nx.Graph, comp_id: dict):
-    for v, cid in comp_id.items():
-        G.nodes[v]["componentID"] = int(cid)
+def attach_components_meta(G, num_comps):
+    G.graph["num_components"] = num_comps
 
 def compute_isolates(G: nx.Graph) -> list:
     return list(nx.isolates(G))
@@ -101,14 +100,13 @@ def attach_isolate_attr(G: nx.Graph, isolates: list):
 def attach_components_meta(G):
     G.graph["num_components"] = analyze_components(G)
 
-def attach_cycles_meta(G):
-    G.graph["has_cycle"] = analyze_cycles(G)
+def attach_cycles_meta(G, is_cycle):
+    G.graph["has_cycle"] = is_cycle
 
-def attach_density_meta(G):
-    G.graph["density"] = analyze_density(G)
+def attach_density_meta(G, density):
+    G.graph["density"] = density
 
-def attach_avg_shortest_path_meta(G):
-    avg_len = analyze_avg_shortest_path(G)
+def attach_avg_shortest_path_meta(G, avg_len):
     G.graph["avg_shortest_path"] = avg_len if avg_len is not None else "undefined"
             
             
@@ -404,7 +402,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     group.add_argument(
         "--input",
-        type=str,
+        type=argparse.FileType("r"),
         help="Path to input GML file"
         )
     parser.add_argument(
@@ -463,15 +461,28 @@ def main():
     root_nodes = []     # local root nodes variable -> made in multi_BFS, used in plot
 
     #ensure the paths (input and output end with .gml)
-    if args.input and not args.input.endswith(".gml"):
+    if args.input and not args.input.name.endswith(".gml"):
         parser.error("--input file must be a .gml file")
 
     if args.output and not args.output.endswith(".gml"):
         parser.error("--output file must be a .gml file")
 
+
+    #To figure out the different possible errors: https://pelegm-networkx.readthedocs.io/en/latest/_modules/networkx/readwrite/gml.html
+    #NetworkXError:
+    #ValueError:
+    #   didn't apply a stringizer or destringizer when writting to the gml file pulling from
+    #NetworkXError:
+    #   input can't be parsed(value is not string with stringizer is None)
+    #UnicodeDecodeError:
+    #   type of NetworkXError where input isn't ASCII-encoded
+
     #Into regular calls
     if args.input:
-        G = load_gml(args.input)
+        try:
+            G = load_gml(args.input)
+        except (nx.NetworkXError, ValueError, UnicodeDecodeError) as err:
+            parser.error(f"Malformed GML in {getattr(args.input, 'name', '<stdin>')}: {err}")
 
     if args.create_random_graph:
         #check that n is an int and c is a float/int
@@ -492,9 +503,6 @@ def main():
             if c < 0:
                 parser.error("--create_random_graph c (for likelihood of giant component) value can not be < 0")
 
-        #setting n, c, and creating the Graph to use
-        n = int(args.create_random_graph[0])
-        c = float(args.create_random_graph[1])
         G = create_random_graph(n, c)
 
     if args.multi_BFS is not None and len(args.multi_BFS) == 0:
@@ -502,7 +510,7 @@ def main():
 
     if args.multi_BFS and G:
         bad = []
-        holder_for_n = len(G.number_of_nodes()) - 1
+        holder_for_n = G.number_of_nodes() - 1
         for node in args.multi_BFS:
             if not node.isdigit():
                 parser.error(f"--multi_BFS {node!r} is not valid int node id")
@@ -523,22 +531,18 @@ def main():
         attach_bfs_meta(G, dist, parent, source)
 
     if args.analyze and G:
-        analyze_components(G)
-        analyze_cycles(G)
-        analyze_isolates(G)
-        analyze_density(G)
-        analyze_avg_shortest_path(G)
-        
+        attach_components_meta(G, analyze_components(G))
         comp_id = compute_component_ids(G)
         attach_component_ids(G, comp_id)
-        
+
+        attach_cycles_meta(G, analyze_cycles(G))
+
+        analyze_isolates(G)
         isolates = compute_isolates(G)
         attach_isolate_attr(G, isolates)
-        
-        attach_components_meta(G)
-        attach_cycles_meta(G)
-        attach_density_meta(G)
-        attach_avg_shortest_path_meta(G)
+
+        attach_density_meta(G, analyze_density(G))
+        attach_avg_shortest_path_meta(G, analyze_avg_shortest_path(G))
 
     if args.plot and G:
         plot_graph(G, root_nodes, args.show_components)
