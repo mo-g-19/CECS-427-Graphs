@@ -1,71 +1,7 @@
 # Graphs Assignment CECS 427
-## Mo Gibson
-The goals of this assignment is to "advance your skills in **graph theory, algorithmic analysis, and professional software development**" through "Erdos-Renyi random graph generation, analysis, transformation, and visualization". Below is a quick summary of the submission instructions
-
-## What this program is capabale of: 
-- Generating and exporting Erdos-Renyi graphs
-- Importing and analyzing graphs from .gml files
-- Performing multi-source BFS with path tracking
-- Identifying **connected components**
-- Detecting **cycles and isolated nodes**
-- Visualizing graphs with **annotated paths and substructures**
-- Exporting computed metadata alongside the graphs
-
-## Functional Requirements
-Must implement Python script graph.py and command-line parameters -> corresponding operations below
 
 ### Command-Line Structure
-'python ./graph.py [--input graph_file.gml] [--create_random_graph n c] [--multi_BFS a1 a2 ...] [--analyze] [--plot] [--output out_graph_file.gml]'
-
-### Descriptons
-- '--input graph_file.gml': reads a graph from given .gml file and uses for subsequent operations
-- '--create_random_graph n c': Generate new Erdos-Renyi graph with n nodes and edge probability p = (c * ln(n) ) / n. Overrides '--input'. Nodes must be labeled with strings ("0", "1", "2",..,"n-1")
-- '--nulti_BFS a1 a2 ...': accepts one or more starting nodes and computes BFS trees from each, storing all shortest paths. Each BFS tree must be independently visualized and compared
-- '--analyze': perform additional structural analyses:
-    - **Connected Components**: Count how many distinct connected subgraphs exist
-    - **Cycle Detection**: Determine whether the graph contains any cycles
-    - **Isolated Nodes**: Identify any nodes not connected to one another
-    - **Graph Density**: Compute how dense the graph is (how many edges compared to the maximum possible)
-    - **Average Shortest Path Legenth**: If graph is connected, computes the average number of steps along the shortest paths for all pairs of nodes.
-- '--plot': Visualizes the plot with:
-    - Highlighted shortest baths from each BFS root node
-    - Distinct styling for isolated nodes
-    - Optional visualization of individual connected components
-- '--output out_graph_file.gml': Save the final graph, with all computed attributes to specified .gml file'
-
-### Examples
-'python ./graph.py --create_random_graph 200 1.5 --multi_BFS 0 5 20 --analyze --plot --output final_graph.gml'
-Creates a 200-node graph, computes BFS trees from nodes 0, 5, and 20, performs full structural analysis, plots all findings, and saves the graph to final_graph.gml.
-
-'python ./graph.py --input data.gml --analyze --plot'
-Reads a pre-defined graph, analyzes its structure, and displays a visualization.
-
-### Design Expectations
-Use **Modular code strcture**, with seperate components for:
-- Graph generation
-- File I/O
-- Graph algorithms (BFS, component detection, cycle detection)
-- Visualization
-- Argument parsing and orchestration
-Implement **robust error handling**, including:
-- File not found
-- Malformed input graphs
-- Invalid node IDs
-- Insufficient parameters
-**Document code thoroughly with function docstrings and comments**
-
-## Submission Instructions:
-A compressed archive (.zip or .tar.gz) containing:
-- source code (graph.py)
-- any additional modules (e.g. a utils/ directory)
-- A README.md file containing:
-    - Usage instructions
-    - Description of your implementation
-    - Examples of commands and outputs
-    - Names and IDs of both team members
-- A sample input .gml file and a corresponding output .gml file
-- Screenshots of plotted graphs (optional but recommended)
-
+'python ./graph.py [--input graph_file.gml] [--create_random_graph n c] [--multi_BFS a1 a2 ...] [--analyze] [--plot] [--output out_graph_file.gml][--show_components]'
 # Student Side for Documentation
 ## Mo Gibson
 ## Philip Tran
@@ -92,7 +28,7 @@ A compressed archive (.zip or .tar.gz) containing:
 	    - parent - the node's parent . 
     - if --analyze is called: 
 	    - num_components - the number of seperate components
-	    - has_cycle - true is the graph has a cycle false otherwise
+	    - has_cycle - 1 is the graph has a cycle 0 otherwise
 	    - density - the density of the graph
 	    - avg_shortest_path - the average shortest distance of the graph 
 	    - componentID - the id of the component the node is a part of
@@ -102,20 +38,19 @@ A compressed archive (.zip or .tar.gz) containing:
 
 ## Implementation Reasoning
 
-- If '--multi_BFS' is called: for each starting node in the list, create a ragged array where each row corresponds to a level, and the columns are the nodes corresponding to that level. Then draw each edge in a color that specifies the source node's level
-- build_parser
 ##### Architecture & modularity
 A single file design was chosen in order to simplify the final submission and increase the ease of grading. however the design was kept modular for function reusability, minimize file size and increase readability. 
 
 ##### Multi-source BFS
 When given an array of accepted node ids, our multi-source BFS function does both multiple individual BFS and (if --analyze is called) the closest root, the distance of the per-root shortest-path, and the parent of all nodes. If there are multiple roots with the same distance to the node, the root with the higher id number is chosen. For indiviual BFS, the NetworkX function single_source_shortest_path() is used to calculate the path in input root_node order and stored in a ragged array. It is then saved in a global variable in case it is needed for --plot. For multi-source BFS, all nodes have an "undefined" distance, in case they are isolated nodes. Then based on a calculated bfs queue, it loops through each node's distance from the root and parent, and only keeps the information from the shortest distance. Both parts has a complexity of O(R(V + E)) where R is the number of roots stated.
+- If '--multi_BFS' is called: for each starting node in the list, create a ragged array where each row corresponds to a level, and the columns are the nodes corresponding to that level. Then draw each edge in a color that specifies the source node's level
 
 #### Arg Parser
-We implemented and arg parser to parse the arguments what were passed into the program. This was required and the only notable implentation was our additon of the -- show_components argument that was not included in the instructions. We chose to do this because the the instructions specify "Optional" visualization of individual connected components and given matplotlib does not have any toggle functionality we thought this was the best way to implement the optionality
+We implemented and arg parser to parse the arguments what were passed into the program. This was required and the only notable implantation was our addition of the -- show_components argument that was not included in the instructions. We chose to do this because the the instructions specify "Optional" visualization of individual connected components and given matplotlib does not have any toggle functionality we thought this was the best way to implement the optionality
 
 ##### Visualization
 Many design choices were made here, for example in the case of visualizing the BFS we decided to use subplots in order to visualize all BFS paths at once instead of having them be graphed as a fill plot where you could only view one at a time. Also we chose to color the nodes instead of labeling them to increase visual readability. We also chose to use a gradient to choose the colors of the edge levels so that we did not have to hard code the colors. This has the added benefit of scalability in that nonmatter how many levels there are or if the number of levels differ from BFS to BFS in the same graph the correct colors will be assigned. Also isolates were chosen to be represented with a red border around the node 
-##### metadata
+##### Metadata
 The metadata that we chose to add was the the data found in the --analyze as well as the data from the --multi_BFS. We chose only to include meta data that was either directly stated in the instructions or that was calculated for another function, because anymore would have been outside the scope of the assignment. 
 ##### Robustness & edge cases
 The robustness was tested multiple ways to ensure the code will exit safely and print an error message if the users did not input in the correct format. We tested no --input or --create_random_graph, both an improper input and output file (that ends in something other than .gml), trying to take an input file that does not exist, trying to take a malformed input file, not enough requirements for --create_random_graph and --multi_BFS, and improper inputs for --create_random_graph (such as strings or doubles for the n value) and --multi_BFS (such as root node ids not existing).
@@ -129,5 +64,7 @@ python ./graph.py --create_random_graph 200 1.5 --multi_BFS 0 5 20 --analyze --p
 ![[Pasted image 20250915210244.png]]![[Pasted image 20250915210355.png]]
 
 python ./graph.py --input data.gml --analyze --plot
-
 ![[Pasted image 20250915220116.png]]![[Pasted image 20250915220157.png]]
+
+./graph.py --create_random_graph 20 1 --multi_BFS 0 5 10 --analyze --plot --output final_graph.gml --show_components
+![[Pasted image 20250916195823.png]]![[Pasted image 20250916195852.png]]

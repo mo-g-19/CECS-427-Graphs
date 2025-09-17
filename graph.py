@@ -258,7 +258,7 @@ def draw_isolates(G, pos, ax):
             linewidths=2.0,
             ax=ax
             )   
-    iso_handle = Patch(
+    iso_handle = Patch(      # creating the legend handle for isolates
         facecolor="none",    # hollow fill
         edgecolor="red",     # red border
         linewidth=2.0,
@@ -416,11 +416,12 @@ def plot_graph(G, root_nodes, show_components):
     seed = 951369
     pos = nx.spring_layout(G, seed=seed)
     
+    #if bfs isnt done and there are no roots
     if len(root_nodes) < 1:
         fig, ax = plt.subplots(1, 1, figsize=(7, 7))
         
         combined_handles = []
-        
+        #if show_components is called in the comand line
         if show_components:
             comp_handles = draw_component_nodes(G, pos, ax)
             combined_handles += comp_handles
@@ -435,19 +436,21 @@ def plot_graph(G, root_nodes, show_components):
         # adds lables to the nodes not required i just added this in when i was verifying the graph will delete later
         draw_lables(G, pos, ax)
 
+        #combines all legend handles into one legend
         if combined_handles:
             ax.legend(handles=combined_handles, title="Legend", loc="best")
             
         plt.show()
         plt.clf()
-
+    #if bfs is done and there are roots
     else: 
         # Make subplots: 1 row, N columns
         fig, axes = plt.subplots(1, len(root_nodes), figsize=(6 * len(root_nodes), 6))
         if len(root_nodes) == 1:
             axes = [axes]  # keep it iterable
-        
+        #loop to make a one sub plot per root
         for ax, root in zip(axes,root_nodes):
+            #if show components was called in cmd line
             if show_components:
                 comp_handles = draw_component_nodes(G, pos, ax)
             else:
@@ -463,6 +466,7 @@ def plot_graph(G, root_nodes, show_components):
             
             ax.set_title(f"BFS from root {root}")
             
+            #combines legend handles and outputs them to a single legend
             combined_handles = []
             if show_components and comp_handles:
                 combined_handles += comp_handles
@@ -634,12 +638,6 @@ def main():
         plot_graph(G, root_nodes, args.show_components)
 
     if args.output and G:
-        comp_id = compute_component_ids(G)
-        attach_component_ids(G, comp_id)
-        
-        isolates = compute_isolates(G)
-        attach_isolate_attr(G, isolates)
-
         save_gml(G, args.output)
         
 
