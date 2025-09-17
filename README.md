@@ -61,13 +61,13 @@ There are a couple of edge cases for this file. Notably, larger graphs take a lo
 
 python ./graph.py --create_random_graph 200 1.5 --multi_BFS 0 5 20 --analyze --plot --output final_graph.gml
 
-![](Pasted%image%20250915210244.png)
-![](Pasted%image%20250915210355.png)
+![](Pasted%20image%2020250915210244.png)
+![](Pasted%20image%2020250915210355.png)
 
 python ./graph.py --input data.gml --analyze --plot
-![](Pasted%image%20250915220116.png)
-![](Pasted%image%20250915220157.png)
+![](Pasted%20image%2020250915220116.png)
+![](Pasted%20image%2020250915220157.png)
 
 ./graph.py --create_random_graph 20 1 --multi_BFS 0 5 10 --analyze --plot --output final_graph.gml --show_components
-![](Pasted%image%20250916195823.png)
-![](Pasted%image%20250916195852.png)
+![](Pasted%20image%2020250916195823.png)
+![](Pasted%20image%2020250916195852.png)
